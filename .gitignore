@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scratch & intermediate media
+/greek-ruins-loop.mp4
+/hermes-*.png
+/scripts/*.png
+
