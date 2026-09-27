@@ -48,10 +48,10 @@ export const STRIP_ITEMS: ContentStripItem[] = [
     thumbnailWebp: "/content-assets/prismax-content-tracker.webp",
     thumbnailPng: "/content-assets/prismax-content-tracker.png",
     liveUrl: "https://prismax-x-tracker-rqdf.onrender.com/",
-    platform: "Live on Render",
+    platform: "Live",
     badgeText: "Live Telemetry",
     accentColor: "rgba(169, 24, 35, 0.9)",
-    techTags: ["Render", "Next.js", "REST APIs"],
+    techTags: ["Telemetry", "Next.js", "REST APIs"],
   },
   {
     id: "prismax-event-manager",
@@ -62,7 +62,7 @@ export const STRIP_ITEMS: ContentStripItem[] = [
     thumbnailWebp: "/content-assets/prismax-event-manager.webp",
     thumbnailPng: "/content-assets/prismax-event-manager.png",
     liveUrl: "https://prismax-event-manager.vercel.app/",
-    platform: "Live on Vercel",
+    platform: "Live",
     badgeText: "Hackathon Hub",
     accentColor: "rgba(185, 28, 28, 0.9)",
     techTags: ["Schedule", "Framer", "Edge"],
@@ -76,10 +76,10 @@ export const STRIP_ITEMS: ContentStripItem[] = [
     thumbnailWebp: "/content-assets/birthday-celebration-prismax.webp",
     thumbnailPng: "/content-assets/birthday-celebration-prismax.png",
     liveUrl: "https://prismax-happy-birthday.vercel.app/",
-    platform: "Live on Vercel",
+    platform: "Live",
     badgeText: "Particle Physics",
     accentColor: "rgba(239, 68, 68, 0.9)",
-    techTags: ["Particles", "Web Audio", "Vercel"],
+    techTags: ["Particles", "Web Audio", "Interactive"],
   },
   {
     id: "discord-telegram-bots",
@@ -167,7 +167,7 @@ export function ContentShowcaseSection() {
     <div
       id="work"
       ref={containerRef}
-      className="relative w-full h-screen min-h-[580px] max-h-[920px] bg-[#090a0e] border-t border-b border-white/10 flex flex-col justify-between overflow-hidden select-none"
+      className="relative w-full h-screen min-h-[520px] max-h-[920px] bg-[#090a0e] border-t border-b border-white/10 flex flex-col justify-start sm:justify-between overflow-hidden select-none"
       aria-label="Content Showcase and Live Applications Strip"
     >
       {/* Background Subtle Ambient Lighting */}
@@ -181,16 +181,13 @@ export function ContentShowcaseSection() {
       />
 
       {/* Top Header Bar & Progress Indicator */}
-      <div className="relative z-20 w-full pt-4 sm:pt-6 md:pt-8 px-4 sm:px-8 md:px-12 flex-shrink-0">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-3 border-b border-white/10">
+      <div className="relative z-20 w-full pt-3 sm:pt-6 md:pt-8 px-4 sm:px-8 md:px-12 flex-shrink-0">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 pb-2 sm:pb-3 border-b border-white/10">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-[var(--crimson)] animate-pulse" />
               <span className="text-[0.62rem] font-mono text-[var(--crimson-bright)] font-semibold uppercase tracking-[0.25em]">
                 CREATIONS SUITE
-              </span>
-              <span className="text-[0.58rem] font-mono text-white/50 px-1.5 py-0.2 rounded-full bg-white/[0.06] border border-white/10">
-                Mouse Scroll Down ➔ Goes Horizontal
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] uppercase tracking-wide">
@@ -198,40 +195,10 @@ export function ContentShowcaseSection() {
             </h2>
           </div>
 
-          {/* Quick jump arrows & indicator */}
-          <div className="flex items-center gap-4 sm:gap-6">
-            <span className="hidden md:inline-flex items-center gap-1.5 text-[0.68rem] text-[var(--text-secondary)] font-mono">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="5" y="2" width="14" height="20" rx="7" />
-                <line x1="12" y1="6" x2="12" y2="10" />
-              </svg>
-              <span>Scroll mouse down to glide through</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[0.68rem] font-mono text-[var(--crimson-bright)] tracking-wider font-medium">
+              0{activeIndex + 1} / 0{STRIP_ITEMS.length}
             </span>
-
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => jumpToCard(Math.max(0, activeIndex - 1))}
-                disabled={activeIndex === 0}
-                className="w-8 h-8 rounded-full border border-white/15 bg-[#12141c] hover:border-[var(--crimson)] hover:text-[var(--crimson)] disabled:opacity-25 disabled:pointer-events-none text-white/90 flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
-                aria-label="Previous application"
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                onClick={() => jumpToCard(Math.min(STRIP_ITEMS.length - 1, activeIndex + 1))}
-                disabled={activeIndex === STRIP_ITEMS.length - 1}
-                className="w-8 h-8 rounded-full border border-white/15 bg-[#12141c] hover:border-[var(--crimson)] hover:text-[var(--crimson)] disabled:opacity-25 disabled:pointer-events-none text-white/90 flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
-                aria-label="Next application"
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
           </div>
         </div>
 
@@ -244,15 +211,15 @@ export function ContentShowcaseSection() {
         </div>
       </div>
 
-      {/* Pinned Horizontal Translating Track (Scroll Down Drives Horizontal Translation) */}
-      <div className="relative z-10 w-full flex-1 flex items-center overflow-visible py-2 sm:py-4">
+      {/* Pinned Horizontal Translating Track (Centered & Tight on Mobile) */}
+      <div className="relative z-10 w-full flex-1 flex items-start sm:items-center overflow-visible pt-3 sm:pt-0 pb-1 sm:py-4">
         {/* Left & Right Subtle Vignette Masks */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-[#090a0e] to-transparent z-20" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-[#090a0e] to-transparent z-20" />
 
         <div
           ref={trackRef}
-          className="flex items-stretch gap-4 sm:gap-6 pl-6 sm:pl-12 md:pl-16 pr-6 sm:pr-12 md:pr-16 w-max will-change-transform"
+          className="flex items-stretch gap-4 sm:gap-6 pl-4 sm:pl-10 md:pl-16 pr-4 sm:pr-10 md:pr-16 w-max will-change-transform"
           style={{ backfaceVisibility: "hidden" }}
         >
           {STRIP_ITEMS.map((item, idx) => {
@@ -263,7 +230,7 @@ export function ContentShowcaseSection() {
                 <div
                   key={item.id}
                   onClick={() => setBotModalOpen(true)}
-                  className={`group relative flex-shrink-0 w-[290px] sm:w-[340px] md:w-[370px] rounded-2xl border transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none ${
+                  className={`group relative flex-shrink-0 w-[285px] sm:w-[340px] md:w-[370px] h-[310px] sm:h-[300px] rounded-2xl border transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none ${
                     isActive
                       ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_12px_40px_rgba(169,24,35,0.35)] scale-[1.01]"
                       : "bg-[#0f1118]/85 border-white/10 hover:border-white/25 hover:bg-[#11131a]"
@@ -288,12 +255,6 @@ export function ContentShowcaseSection() {
 
                       {/* Glint Light Sweep on Hover */}
                       <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12" />
-
-                      {/* Status Pill */}
-                      <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-[0.6rem] font-mono text-white/90">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--crimson)] animate-pulse" />
-                        <span>{item.platform}</span>
-                      </div>
 
                       {/* Action Pill on Image */}
                       <div className="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-[var(--crimson)] text-white text-[0.62rem] font-bold shadow-md group-hover:scale-105 transition-transform flex items-center gap-1">
@@ -352,7 +313,7 @@ export function ContentShowcaseSection() {
                 href={item.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group relative flex-shrink-0 w-[290px] sm:w-[340px] md:w-[370px] rounded-2xl border transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none ${
+                className={`group relative flex-shrink-0 w-[285px] sm:w-[340px] md:w-[370px] h-[310px] sm:h-[300px] rounded-2xl border transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none ${
                   isActive
                     ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_12px_40px_rgba(169,24,35,0.35)] scale-[1.01]"
                     : "bg-[#0f1118]/85 border-white/10 hover:border-white/25 hover:bg-[#11131a]"
@@ -375,12 +336,6 @@ export function ContentShowcaseSection() {
 
                     {/* Glint Light Sweep on Hover */}
                     <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12" />
-
-                    {/* Status Pill */}
-                    <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-[0.6rem] font-mono text-emerald-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      <span>{item.platform}</span>
-                    </div>
 
                     {/* Action Pill on Image */}
                     <div className="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-[var(--crimson)] text-white text-[0.62rem] font-bold shadow-md group-hover:scale-105 transition-transform flex items-center gap-1">

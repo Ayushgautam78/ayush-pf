@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_ITEMS = [
@@ -13,11 +13,31 @@ const NAV_ITEMS = [
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 80);
+      const currentScrollY = window.scrollY;
+
+      // Always show when near the very top
+      if (currentScrollY < 60) {
+        setIsVisible(true);
+      } else {
+        const delta = currentScrollY - lastScrollY.current;
+        if (delta > 8) {
+          // Scrolling down: hide the navigation / Let's talk bar
+          setIsVisible(false);
+        } else if (delta < -8) {
+          // Scrolling up: reveal immediately
+          setIsVisible(true);
+        }
+      }
+
+      setIsScrolled(currentScrollY > 80);
+      lastScrollY.current = currentScrollY;
     };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -36,8 +56,11 @@ export function Navigation() {
       <motion.header
         className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none"
         initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        animate={{
+          opacity: isVisible || isOpen ? 1 : 0,
+          y: isVisible || isOpen ? 0 : -90,
+        }}
+        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
       >
         <nav
           className={`pointer-events-auto flex items-center justify-between gap-4 md:gap-8 px-4 md:px-6 py-2.5 rounded-full border transition-all duration-500 ${

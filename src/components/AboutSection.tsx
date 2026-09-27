@@ -158,18 +158,18 @@ export function AboutSection() {
     <section
       id="about"
       ref={sectionRef}
-      className="relative z-10 py-24 md:py-36 bg-[var(--bg-primary)] border-t border-[var(--border-subtle)] overflow-hidden"
+      className="relative z-10 py-10 sm:py-20 md:py-32 bg-[var(--bg-primary)] border-t border-[var(--border-subtle)] overflow-hidden"
       aria-label="About and Background"
     >
-      <div className="max-w-6xl mx-auto px-[var(--content-padding)] mb-16 md:mb-20">
+      <div className="max-w-6xl mx-auto px-[var(--content-padding)] mb-8 sm:mb-14 md:mb-20">
         {/* Section Label */}
-        <p className="text-micro text-[var(--crimson)] tracking-[0.3em] uppercase mb-8 md:mb-12 font-semibold">
+        <p className="text-micro text-[var(--crimson)] tracking-[0.3em] uppercase mb-2 sm:mb-6 md:mb-8 font-semibold">
           (About)
         </p>
 
         {/* Large Editorial Heading */}
-        <div ref={headingRef} className="mb-8 md:mb-12">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] leading-[1.1] max-w-5xl tracking-wide">
+        <div ref={headingRef} className="mb-4 sm:mb-8 md:mb-12">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] leading-[1.1] max-w-5xl tracking-wide">
             {headingWords.map((item, i) => (
               <span
                 key={i}
@@ -184,16 +184,16 @@ export function AboutSection() {
         </div>
 
         {/* Narrative columns */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 pt-4 border-t border-[var(--border-subtle)]">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 md:gap-14 pt-3 sm:pt-4 border-t border-[var(--border-subtle)]">
           <p
             ref={taglineRef}
-            className="md:col-span-7 text-base md:text-lg text-[var(--ivory-dim)] font-light leading-relaxed"
+            className="md:col-span-7 text-sm sm:text-base md:text-lg text-[var(--ivory-dim)] font-light leading-relaxed"
           >
             I specialize in bridging artistic visual direction and robust software engineering. Whether building high-performance web applications, interactive motion experiences, or developer toolkits, my focus is always on speed, beauty, and effortless user flow.
           </p>
           <div
             ref={bioRef}
-            className="md:col-span-5 text-sm md:text-base text-[var(--text-secondary)] font-light leading-relaxed space-y-4"
+            className="md:col-span-5 text-xs sm:text-sm md:text-base text-[var(--text-secondary)] font-light leading-relaxed space-y-3 sm:space-y-4"
           >
             <p>
               From architecture planning to the final micro-interaction, every detail is engineered with intention and craft. I take the work seriously, so the results do not have to explain themselves.
@@ -203,14 +203,11 @@ export function AboutSection() {
       </div>
 
       {/* Modern Rotating Tech Strip (Black/Charcoal with Crimson Block Accents) */}
-      <div className="w-full relative mt-4 pt-8 pb-6 border-t border-b border-white/10 bg-[#0e1015]">
+      <div className="w-full relative mt-2 sm:mt-4 pt-4 pb-4 sm:pt-7 sm:pb-6 border-t border-b border-white/10 bg-[#0e1015]">
         {/* Strip Header */}
-        <div className="max-w-6xl mx-auto px-[var(--content-padding)] mb-5 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-[var(--content-padding)] mb-2.5 sm:mb-5 flex items-center justify-between">
           <span className="text-micro tracking-[0.25em] uppercase text-[var(--crimson)] font-semibold">
-            Technology Stack & Tools
-          </span>
-          <span className="text-micro tracking-widest uppercase text-[var(--text-secondary)] hidden sm:inline font-mono">
-            Active Engineering Arsenal
+            My Skills
           </span>
         </div>
 

@@ -181,40 +181,10 @@ export function JourneySection() {
             </h2>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6">
-            <span className="hidden md:inline-flex items-center gap-1.5 text-micro text-[var(--text-secondary)] tracking-wider uppercase font-medium">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="5" y="2" width="14" height="20" rx="7" />
-                <line x1="12" y1="6" x2="12" y2="10" />
-              </svg>
-              <span>Scroll down on mouse wheel to navigate</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[0.68rem] font-mono text-[var(--crimson-bright)] tracking-wider font-medium">
+              0{activeIndex + 1} / 0{JOURNEY_STAGES.length}
             </span>
-
-            {/* Quick jump arrows */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => jumpToStage(Math.max(0, activeIndex - 1))}
-                disabled={activeIndex === 0}
-                className="w-8 h-8 rounded-full border border-white/15 bg-[#12141c] shadow-sm flex items-center justify-center text-[var(--ivory)] hover:border-[var(--crimson)] hover:text-[var(--crimson)] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
-                aria-label="Previous phase"
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                onClick={() => jumpToStage(Math.min(JOURNEY_STAGES.length - 1, activeIndex + 1))}
-                disabled={activeIndex === JOURNEY_STAGES.length - 1}
-                className="w-8 h-8 rounded-full border border-white/15 bg-[#12141c] shadow-sm flex items-center justify-center text-[var(--ivory)] hover:border-[var(--crimson)] hover:text-[var(--crimson)] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
-                aria-label="Next phase"
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
           </div>
         </div>
 

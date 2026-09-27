@@ -50,27 +50,27 @@ export function SwordIntroSection() {
     <section
       id="sword-intro"
       ref={containerRef}
-      className="relative w-full min-h-[110vh] flex flex-col items-center justify-between pt-24 pb-20 px-4 pointer-events-none"
+      className="relative w-full min-h-[85vh] sm:min-h-[110vh] flex flex-col items-center justify-between pt-12 sm:pt-24 pb-10 sm:pb-20 px-4 pointer-events-none"
       aria-label="The Celestial Blade"
     >
       {/* Scroll invitation */}
       <div
         ref={labelRef}
-        className="relative z-10 text-center max-w-xl mx-auto will-change-transform flex flex-col items-center pt-8"
+        className="relative z-10 text-center max-w-xl mx-auto will-change-transform flex flex-col items-center pt-2 sm:pt-8"
       >
-        <span className="text-micro text-[var(--crimson)] tracking-[0.3em] uppercase mb-2 font-semibold">
+        <span className="text-micro text-[var(--crimson)] tracking-[0.3em] uppercase mb-1.5 sm:mb-2 font-semibold">
           ( The Celestial Blade )
         </span>
-        <h2 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] uppercase tracking-wide mb-3">
+        <h2 className="text-xl sm:text-3xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] uppercase tracking-wide mb-2 sm:mb-3">
           Unsheathe &amp; Explore
         </h2>
-        <p className="text-[0.72rem] text-[var(--text-secondary)] tracking-[0.25em] uppercase font-light">
+        <p className="text-[0.68rem] sm:text-[0.72rem] text-[var(--text-secondary)] tracking-[0.25em] uppercase font-light">
           Scroll down to draw the blade
         </p>
       </div>
 
       {/* Center breathing space where the sword rests and unsheathes */}
-      <div className="w-full flex-1 min-h-[300px]" />
+      <div className="w-full flex-1 min-h-[180px] sm:min-h-[300px]" />
 
       {/* Bottom hint leading to Contributions */}
       <div className="relative z-10 text-center text-micro text-[var(--text-muted)] tracking-widest uppercase pb-4">

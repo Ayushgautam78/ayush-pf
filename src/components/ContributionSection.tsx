@@ -177,7 +177,7 @@ export function ContributionSection() {
   return (
     <section
       id="contributions"
-      className="relative z-10 w-full py-14 md:py-20 overflow-hidden bg-[var(--bg-primary)] text-[var(--ivory)]"
+      className="relative z-10 w-full py-8 sm:py-14 md:py-20 overflow-hidden bg-[var(--bg-primary)] text-[var(--ivory)]"
       aria-label="Projects I Have Contributed To"
     >
 
@@ -238,7 +238,7 @@ export function ContributionSection() {
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="px-[var(--content-padding)] mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="px-[var(--content-padding)] mb-3 sm:mb-6 md:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-2.5 sm:gap-4">
           <div>
             <p className="text-micro text-[var(--crimson)] tracking-[0.25em] uppercase mb-2 font-semibold">
               Ecosystem Collaborations
