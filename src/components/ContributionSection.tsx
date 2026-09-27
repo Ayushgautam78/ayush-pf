@@ -177,7 +177,7 @@ export function ContributionSection() {
   return (
     <section
       id="contributions"
-      className="relative z-10 w-full py-8 sm:py-14 md:py-20 overflow-hidden bg-[var(--bg-primary)] text-[var(--ivory)]"
+      className="relative z-10 w-full py-5 sm:py-12 md:py-20 overflow-hidden bg-[var(--bg-primary)] text-[var(--ivory)]"
       aria-label="Projects I Have Contributed To"
     >
 

@@ -167,7 +167,7 @@ export function ContentShowcaseSection() {
     <div
       id="work"
       ref={containerRef}
-      className="relative w-full h-screen min-h-[570px] max-h-[920px] bg-[#090a0e] border-t border-b border-white/10 flex flex-col justify-start sm:justify-between overflow-hidden select-none"
+      className="relative w-full h-screen min-h-[500px] max-h-[920px] bg-[#090a0e] border-t border-b border-white/10 flex flex-col justify-start sm:justify-between overflow-hidden select-none"
       aria-label="Content Showcase and Live Applications Strip"
     >
       {/* Background Subtle Ambient Lighting */}
@@ -181,10 +181,10 @@ export function ContentShowcaseSection() {
       />
 
       {/* Top Header Bar & Progress Indicator */}
-      <div className="relative z-20 w-full pt-3 sm:pt-6 md:pt-8 px-4 sm:px-8 md:px-12 flex-shrink-0">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 pb-2 sm:pb-3 border-b border-white/10">
+      <div className="relative z-20 w-full pt-2.5 sm:pt-6 md:pt-8 px-4 sm:px-8 md:px-12 flex-shrink-0">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-1.5 sm:gap-2.5 pb-2 border-b border-white/10">
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-0.5 sm:mb-1">
               <span className="w-2 h-2 rounded-full bg-[var(--crimson)] animate-pulse" />
               <span className="text-[0.62rem] font-mono text-[var(--crimson-bright)] font-semibold uppercase tracking-[0.25em]">
                 CREATIONS SUITE
@@ -203,7 +203,7 @@ export function ContentShowcaseSection() {
         </div>
 
         {/* Global Scrubbing Progress Bar */}
-        <div className="max-w-7xl mx-auto w-full h-[2.5px] bg-white/10 mt-2 relative overflow-hidden rounded-full">
+        <div className="max-w-7xl mx-auto w-full h-[2.5px] bg-white/10 mt-1.5 relative overflow-hidden rounded-full">
           <div
             className="h-full bg-[var(--crimson)] transition-all duration-75 rounded-full shadow-[0_0_8px_rgba(169,24,35,0.6)]"
             style={{ width: `${Math.max(8, scrollProgress * 100)}%` }}
@@ -211,8 +211,8 @@ export function ContentShowcaseSection() {
         </div>
       </div>
 
-      {/* Pinned Horizontal Translating Track (Centered & Tight on Mobile) */}
-      <div className="relative z-10 w-full flex-1 flex items-center overflow-visible py-2 sm:py-4">
+      {/* Pinned Horizontal Translating Track (Tight right below heading on Mobile) */}
+      <div className="relative z-10 w-full flex-1 flex items-start sm:items-center overflow-visible pt-2 sm:pt-0 pb-1 sm:py-4">
         {/* Left & Right Subtle Vignette Masks */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-[#090a0e] to-transparent z-20" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-[#090a0e] to-transparent z-20" />
@@ -230,7 +230,7 @@ export function ContentShowcaseSection() {
                 <div
                   key={item.id}
                   onClick={() => setBotModalOpen(true)}
-                  className={`group relative flex-shrink-0 w-[295px] sm:w-[340px] md:w-[370px] h-[355px] sm:h-[350px] md:h-[365px] rounded-2xl border transition-all duration-300 p-3.5 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none overflow-hidden ${
+                  className={`group relative flex-shrink-0 w-[295px] sm:w-[340px] md:w-[370px] h-[340px] sm:h-[350px] md:h-[365px] rounded-2xl border transition-all duration-300 p-3.5 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none overflow-hidden ${
                     isActive
                       ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_12px_40px_rgba(169,24,35,0.35)] scale-[1.01]"
                       : "bg-[#0f1118]/85 border-white/10 hover:border-white/25 hover:bg-[#11131a]"
@@ -242,7 +242,7 @@ export function ContentShowcaseSection() {
                 >
                   {/* Top: Thumbnail Preview */}
                   <div>
-                    <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-white/10 bg-black/80 mb-2.5 sm:mb-3 shadow-inner group/img flex-shrink-0">
+                    <div className="relative h-[135px] sm:h-[155px] w-full rounded-xl overflow-hidden border border-white/10 bg-black/80 mb-2 sm:mb-2.5 shadow-inner group/img flex-shrink-0">
                       <picture>
                         <source srcSet={item.thumbnailWebp} type="image/webp" />
                         <img
@@ -318,7 +318,7 @@ export function ContentShowcaseSection() {
                 href={item.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group relative flex-shrink-0 w-[295px] sm:w-[340px] md:w-[370px] h-[355px] sm:h-[350px] md:h-[365px] rounded-2xl border transition-all duration-300 p-3.5 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none overflow-hidden ${
+                className={`group relative flex-shrink-0 w-[295px] sm:w-[340px] md:w-[370px] h-[340px] sm:h-[350px] md:h-[365px] rounded-2xl border transition-all duration-300 p-3.5 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none overflow-hidden ${
                   isActive
                     ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_12px_40px_rgba(169,24,35,0.35)] scale-[1.01]"
                     : "bg-[#0f1118]/85 border-white/10 hover:border-white/25 hover:bg-[#11131a]"
@@ -328,7 +328,7 @@ export function ContentShowcaseSection() {
               >
                 {/* Top: Thumbnail Preview */}
                 <div>
-                  <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-white/10 bg-black/80 mb-2.5 sm:mb-3 shadow-inner group/img flex-shrink-0">
+                  <div className="relative h-[135px] sm:h-[155px] w-full rounded-xl overflow-hidden border border-white/10 bg-black/80 mb-2 sm:mb-2.5 shadow-inner group/img flex-shrink-0">
                     <picture>
                       <source srcSet={item.thumbnailWebp} type="image/webp" />
                       <img
