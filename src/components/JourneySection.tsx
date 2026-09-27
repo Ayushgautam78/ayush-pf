@@ -104,8 +104,8 @@ export function JourneySection() {
 
     const timer = setTimeout(() => {
       const calculateScroll = () => {
-        const totalScroll = track.scrollWidth - window.innerWidth + 120;
-        return Math.max(100, totalScroll);
+        const totalScroll = track.scrollWidth - window.innerWidth;
+        return Math.max(0, totalScroll);
       };
 
       const totalScroll = calculateScroll();
@@ -235,7 +235,7 @@ export function JourneySection() {
       >
         <div
           ref={trackRef}
-          className="flex gap-4 sm:gap-6 items-center pl-4 sm:pl-10 md:pl-16 pr-16 sm:pr-28 w-max will-change-transform"
+          className="flex gap-4 sm:gap-6 items-center pl-4 sm:pl-10 md:pl-16 pr-4 sm:pr-10 md:pr-16 w-max will-change-transform"
         >
           {JOURNEY_STAGES.map((stage, idx) => {
             const isActive = idx === activeIndex;

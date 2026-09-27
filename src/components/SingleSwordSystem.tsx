@@ -40,6 +40,7 @@ export function SingleSwordSystem() {
       const heroEl = document.getElementById("hero");
       const introEl = document.getElementById("sword-intro");
       const contribEl = document.getElementById("contributions");
+      const workEl = document.getElementById("work");
       const aboutEl = document.getElementById("about");
       const journeyEl = document.getElementById("journey");
       const contactEl = document.getElementById("contact");
@@ -47,6 +48,7 @@ export function SingleSwordSystem() {
       const heroBottom = heroEl ? heroEl.getBoundingClientRect().bottom : viewH;
       const introRect = introEl ? introEl.getBoundingClientRect() : null;
       const contribRect = contribEl ? contribEl.getBoundingClientRect() : null;
+      const workRect = workEl ? workEl.getBoundingClientRect() : null;
       const aboutRect = aboutEl ? aboutEl.getBoundingClientRect() : null;
       const journeyRect = journeyEl ? journeyEl.getBoundingClientRect() : null;
       const contactRect = contactEl ? contactEl.getBoundingClientRect() : null;
@@ -85,13 +87,16 @@ export function SingleSwordSystem() {
         rotation = 0;
         scale = mobile ? 0.72 : 1.0;
       }
-      // 3. CONTRIBUTIONS SECTION: 100% HIDDEN (0% sword visibility over the video)
-      else if (contribRect && contribRect.top <= viewH * 0.15 && contribRect.bottom > -50) {
+      // 3. CONTRIBUTIONS & WORK / CONTENT SHOWCASE: 100% HIDDEN (0% sword visibility over cards & video)
+      else if (
+        (contribRect && contribRect.top <= viewH * 0.15 && contribRect.bottom > -50) ||
+        (workRect && workRect.top <= viewH * 0.15 && workRect.bottom > -50)
+      ) {
         opacity = 0;
         unsheatheProgress = 1;
       }
       // 4. ABOUT PHASE: Reappears unsheathed with subtle rotation (~22deg, toned down)
-      else if (aboutRect && aboutRect.bottom > viewH * 0.15) {
+      else if (aboutRect && aboutRect.top <= viewH * 0.85 && aboutRect.bottom > viewH * 0.15) {
         unsheatheProgress = 1;
         let enterT = 1;
         if (aboutRect.top > viewH * 0.5) {

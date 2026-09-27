@@ -180,7 +180,6 @@ export function ContributionSection() {
       className="relative z-10 w-full py-14 md:py-20 overflow-hidden bg-[var(--bg-primary)] text-[var(--ivory)]"
       aria-label="Projects I Have Contributed To"
     >
-      <div id="work" className="absolute -top-20 left-0 w-0 h-0 pointer-events-none" aria-hidden="true" />
 
       {/* Cinematic Background Video: Editorial Monochrome Grey Aesthetic */}
       <video

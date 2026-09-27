@@ -2,6 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { HeroSection } from "@/components/HeroSection";
 import { SwordIntroSection } from "@/components/SwordIntroSection";
 import { ContributionSection } from "@/components/ContributionSection";
+import { ContentShowcaseSection } from "@/components/ContentShowcaseSection";
 import { AboutSection } from "@/components/AboutSection";
 import { JourneySection } from "@/components/JourneySection";
 import { ContactGatewaySection } from "@/components/ContactGatewaySection";
@@ -20,6 +21,9 @@ export default function Home() {
 
       {/* Ecosystem Contributions with Cinematic Ruins Video */}
       <ContributionSection />
+
+      {/* Content Showcase Section: Live Applications, Creator Suites & Autonomous Bots */}
+      <ContentShowcaseSection />
 
       {/* About & Persona Pills & Vector Tech Badges */}
       <AboutSection />

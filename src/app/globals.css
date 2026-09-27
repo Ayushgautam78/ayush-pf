@@ -101,12 +101,17 @@
 }
 
 /* ===== BASE ===== */
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
 html {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: auto;
+  touch-action: manipulation;
 }
 
 html.lenis, html.lenis body { height: auto; }
