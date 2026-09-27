@@ -77,27 +77,16 @@ export function HermesCharacter() {
     let smoothX = 0.5;
     let targetX = 0.5;
     let animId = 0;
+    let isRunning = false;
 
     // Set initial frame
     img.src = FRAMES[CENTER_FRAME];
 
-    const onMouseMove = (e: MouseEvent) => {
-      targetX = e.clientX / window.innerWidth;
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        targetX = e.touches[0].clientX / window.innerWidth;
-      }
-    };
-
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
-
     const tick = () => {
       // Interpolate smoothly toward target
       const diff = targetX - smoothX;
-      if (Math.abs(diff) > EPSILON) {
+      const isMoving = Math.abs(diff) > EPSILON;
+      if (isMoving) {
         smoothX += diff * LERP;
       } else {
         smoothX = targetX;
@@ -111,7 +100,7 @@ export function HermesCharacter() {
 
       // Check if we should move DOWN (toward frame 0 / left)
       if (currentFrame > 0) {
-        const boundary = BOUNDARIES[currentFrame - 1]; // boundary between currentFrame-1 and currentFrame
+        const boundary = BOUNDARIES[currentFrame - 1];
         if (x < boundary - HYSTERESIS) {
           newFrame = currentFrame - 1;
         }
@@ -119,7 +108,7 @@ export function HermesCharacter() {
 
       // Check if we should move UP (toward frame 8 / right)
       if (currentFrame < FRAME_COUNT - 1) {
-        const boundary = BOUNDARIES[currentFrame]; // boundary between currentFrame and currentFrame+1
+        const boundary = BOUNDARIES[currentFrame];
         if (x > boundary + HYSTERESIS) {
           newFrame = currentFrame + 1;
         }
@@ -131,10 +120,34 @@ export function HermesCharacter() {
         img.src = FRAMES[currentFrame];
       }
 
-      animId = requestAnimationFrame(tick);
+      if (isMoving) {
+        animId = requestAnimationFrame(tick);
+      } else {
+        isRunning = false;
+      }
     };
 
-    animId = requestAnimationFrame(tick);
+    const requestTick = () => {
+      if (!isRunning) {
+        isRunning = true;
+        animId = requestAnimationFrame(tick);
+      }
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      targetX = e.clientX / window.innerWidth;
+      requestTick();
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        targetX = e.touches[0].clientX / window.innerWidth;
+        requestTick();
+      }
+    };
+
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);

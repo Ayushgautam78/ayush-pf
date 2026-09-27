@@ -69,6 +69,33 @@ export function JourneySection() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const stRef = useRef<ScrollTrigger | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    if (e.changedTouches.length === 0) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+
+    // Trigger only if horizontal swipe gesture dominates
+    if (Math.abs(deltaX) > 35 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1) {
+      if (deltaX < 0) {
+        jumpToStage(Math.min(JOURNEY_STAGES.length - 1, activeIndex + 1));
+      } else {
+        jumpToStage(Math.max(0, activeIndex - 1));
+      }
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -201,10 +228,14 @@ export function JourneySection() {
       </div>
 
       {/* Pinned Horizontal Translating Track (Centered & Thin & Fully Visible) */}
-      <div className="relative z-10 w-full flex-1 flex items-center overflow-visible py-1 sm:py-2">
+      <div
+        className="relative z-10 w-full flex-1 flex items-center overflow-visible py-1 sm:py-2"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div
           ref={trackRef}
-          className="flex gap-5 sm:gap-6 items-center pl-6 sm:pl-10 md:pl-16 pr-28 w-max will-change-transform"
+          className="flex gap-4 sm:gap-6 items-center pl-4 sm:pl-10 md:pl-16 pr-16 sm:pr-28 w-max will-change-transform"
         >
           {JOURNEY_STAGES.map((stage, idx) => {
             const isActive = idx === activeIndex;
@@ -212,7 +243,7 @@ export function JourneySection() {
               <div
                 key={stage.indexStr}
                 onClick={() => jumpToStage(idx)}
-                className={`relative flex flex-col justify-between w-[300px] sm:w-[340px] md:w-[370px] h-[275px] sm:h-[295px] p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer backdrop-blur-xl ${
+                className={`relative flex flex-col justify-between w-[275px] sm:w-[340px] md:w-[370px] h-[275px] sm:h-[295px] p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer backdrop-blur-xl ${
                   isActive
                     ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_14px_36px_rgba(169,24,35,0.28)] scale-[1.01]"
                     : "bg-[#11131a]/80 border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.5)] hover:border-white/20 hover:bg-[#11131a]/95"

@@ -132,7 +132,7 @@ export function SingleSwordSystem() {
           const zoomProgress = clamp(-contactRect.top / scrollDistance, 0, 1);
 
           const swordT = Math.min(zoomProgress / 0.6, 1);
-          scale = lerp(mobile ? 0.85 : 1.05, mobile ? 7 : 11, Math.pow(swordT, 1.8));
+          scale = lerp(mobile ? 0.85 : 1.05, mobile ? 4.5 : 10, Math.pow(swordT, 1.8));
 
           if (swordT <= 0.35) {
             opacity = 0.26;
@@ -195,10 +195,11 @@ export function SingleSwordSystem() {
         position: "fixed",
         left: "50%",
         top: "50%",
-        width: "clamp(460px, 58vw, 880px)",
-        height: "clamp(110px, 14vw, 190px)",
+        width: "clamp(290px, 55vw, 880px)",
+        height: "clamp(75px, 14vw, 190px)",
         transformOrigin: "50% 50%",
         pointerEvents: "none",
+        touchAction: "none",
         userSelect: "none",
         zIndex: 9990,
         opacity: 0,

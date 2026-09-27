@@ -194,30 +194,30 @@ export function ContactGatewaySection() {
             transform: "translateY(24px)",
           }}
         >
-          <div className="w-full max-w-xl mx-auto px-6 md:px-10 py-6 md:py-8 text-[var(--ivory)]">
+          <div className="w-full max-w-xl mx-auto px-5 sm:px-8 md:px-10 py-3 sm:py-6 text-[var(--ivory)] max-h-[94vh] overflow-y-auto overscroll-contain">
             {submitted ? (
-              <div className="text-center py-20 space-y-5">
-                <div className="w-14 h-14 rounded-full border border-[var(--crimson)] mx-auto flex items-center justify-center bg-[var(--crimson)]/10">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--crimson)]"><polyline points="20 6 9 17 4 12" /></svg>
+              <div className="text-center py-16 sm:py-20 space-y-4 sm:space-y-5">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[var(--crimson)] mx-auto flex items-center justify-center bg-[var(--crimson)]/10">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--crimson)]"><polyline points="20 6 9 17 4 12" /></svg>
                 </div>
-                <h3 className="text-2xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)]">Details received</h3>
-                <p className="text-sm text-[var(--text-secondary)] max-w-sm mx-auto">Thank you for reaching out. I usually reply within 24 hours.</p>
-                <button type="button" onClick={() => setSubmitted(false)} className="mt-4 px-6 py-2.5 rounded-full border border-white/20 text-sm text-[var(--ivory)] hover:bg-[var(--crimson)] hover:border-[var(--crimson)] transition-colors cursor-pointer">Send another</button>
+                <h3 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)]">Details received</h3>
+                <p className="text-xs sm:text-sm text-[var(--text-secondary)] max-w-sm mx-auto">Thank you for reaching out. I usually reply within 24 hours.</p>
+                <button type="button" onClick={() => setSubmitted(false)} className="mt-3 px-5 py-2 rounded-full border border-white/20 text-xs sm:text-sm text-[var(--ivory)] hover:bg-[var(--crimson)] hover:border-[var(--crimson)] transition-colors cursor-pointer">Send another</button>
               </div>
             ) : (
               <>
                 {/* Header */}
-                <p className="text-micro text-[var(--crimson)] tracking-[0.25em] mb-6 font-semibold">(Leave your details)</p>
-                <h2 className="text-3xl sm:text-4xl md:text-[3rem] font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] leading-[1] tracking-wide uppercase mb-6">
+                <p className="text-micro text-[var(--crimson)] tracking-[0.25em] mb-2 sm:mb-4 font-semibold">(Leave your details)</p>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] leading-[1] tracking-wide uppercase mb-2 sm:mb-4">
                   Open the door
                 </h2>
 
-                <div className="flex items-center gap-3 mb-12 md:mb-14">
-                  <span className="text-sm text-[var(--text-secondary)]">Or just write:</span>
-                  <a href="mailto:hello@ayush.dev" className="text-sm md:text-base text-[var(--ivory)] border-b border-[var(--crimson)] pb-0.5 hover:text-[var(--crimson)] transition-colors">hello@ayush.dev</a>
+                <div className="flex items-center gap-2.5 mb-5 sm:mb-8 md:mb-10">
+                  <span className="text-xs sm:text-sm text-[var(--text-secondary)]">Or just write:</span>
+                  <a href="mailto:hello@ayush.dev" className="text-xs sm:text-sm md:text-base text-[var(--ivory)] border-b border-[var(--crimson)] pb-0.5 hover:text-[var(--crimson)] transition-colors">hello@ayush.dev</a>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-7">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
                   <div className="contact-field">
                     <label htmlFor="c-name">Name</label>
                     <input id="c-name" type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Your full name" />

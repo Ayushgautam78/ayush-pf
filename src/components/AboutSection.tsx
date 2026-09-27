@@ -73,27 +73,26 @@ export function AboutSection() {
     return () => ctx.revert();
   }, []);
 
-  // Continuous JS ticker: runs smoothly across Brave and all browsers
+  // Continuous JS ticker: runs only when in viewport to ensure 60fps on mobile
   useEffect(() => {
     const track = techTrackRef.current;
     if (!track) return;
 
-    let isHovered = false;
-    let animId: number;
+    let isPaused = false;
+    let isVisible = false;
+    let animId: number = 0;
     const speed = 0.9;
 
-    const onEnter = () => {
-      isHovered = true;
-    };
-    const onLeave = () => {
-      isHovered = false;
-    };
+    const onEnter = () => { isPaused = true; };
+    const onLeave = () => { isPaused = false; };
 
     track.addEventListener("mouseenter", onEnter);
     track.addEventListener("mouseleave", onLeave);
+    track.addEventListener("touchstart", onEnter, { passive: true });
+    track.addEventListener("touchend", onLeave, { passive: true });
 
     const step = () => {
-      if (!isHovered) {
+      if (!isPaused && isVisible) {
         posRef.current += speed;
         const halfWidth = track.scrollWidth / 2;
         if (halfWidth > 0 && posRef.current >= halfWidth) {
@@ -101,15 +100,32 @@ export function AboutSection() {
         }
         track.style.transform = `translate3d(-${posRef.current}px, 0, 0)`;
       }
-      animId = requestAnimationFrame(step);
+      if (isVisible) {
+        animId = requestAnimationFrame(step);
+      }
     };
 
-    animId = requestAnimationFrame(step);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          cancelAnimationFrame(animId);
+          animId = requestAnimationFrame(step);
+        } else {
+          cancelAnimationFrame(animId);
+        }
+      },
+      { rootMargin: "150px" }
+    );
+    observer.observe(track);
 
     return () => {
+      observer.disconnect();
       cancelAnimationFrame(animId);
       track.removeEventListener("mouseenter", onEnter);
       track.removeEventListener("mouseleave", onLeave);
+      track.removeEventListener("touchstart", onEnter);
+      track.removeEventListener("touchend", onLeave);
     };
   }, []);
 
