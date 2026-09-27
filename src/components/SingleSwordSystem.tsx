@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
  * SingleSwordSystem
@@ -110,16 +113,33 @@ export function SingleSwordSystem() {
         rotation = lerp(0, 22, t);
         scale = lerp(mobile ? 0.72 : 1.0, mobile ? 0.68 : 0.92, t);
       }
-      // 5. JOURNEY PHASE: Rotates vertically from 22deg to 90deg down the spine (Subtle spine guide)
+      // 5. JOURNEY PHASE: Rotates vertically to 90deg and travels dynamically along the spine
       else if (journeyRect && journeyRect.bottom > viewH * 0.1) {
         unsheatheProgress = 1;
 
-        const t = clamp((viewH * 0.85 - journeyRect.top) / journeyRect.height, 0, 1);
-        opacity = lerp(0.14, 0.22, t);
-        x = lerp(mobile ? vw * 0.08 : vw * 0.16, 0, t);
-        y = lerp(-viewH * 0.03, 0, t);
-        rotation = lerp(22, 90, t);
-        scale = lerp(mobile ? 0.68 : 0.92, mobile ? 0.85 : 1.05, t);
+        const journeyST = ScrollTrigger.getById("journey-horizontal");
+        const pinProgress = journeyST ? journeyST.progress : 0;
+
+        if (journeyRect.top > 0) {
+          // Entering Journey from About: rotate smoothly from 22deg to 90deg
+          const enterT = clamp((viewH * 0.85 - journeyRect.top) / (viewH * 0.85), 0, 1);
+          opacity = lerp(0.14, 0.22, enterT);
+          x = lerp(mobile ? vw * 0.08 : vw * 0.16, 0, enterT);
+          y = lerp(-viewH * 0.03, mobile ? -viewH * 0.07 : -viewH * 0.10, enterT);
+          rotation = lerp(22, 90, enterT);
+          scale = lerp(mobile ? 0.68 : 0.92, mobile ? 0.85 : 1.05, enterT);
+        } else {
+          // While Journey is pinned: sword travels dynamically down the central spine with scroll!
+          rotation = 90;
+          x = 0;
+          y = lerp(
+            mobile ? -viewH * 0.07 : -viewH * 0.10,
+            mobile ? viewH * 0.07 : viewH * 0.10,
+            pinProgress
+          );
+          opacity = lerp(0.20, 0.28, Math.sin(Math.max(0.1, pinProgress) * Math.PI));
+          scale = mobile ? 0.85 : 1.05;
+        }
       }
       // 7. CONTACT GATEWAY: CINEMATIC ZOOM-IN INTO PORTAL FLARE (Calibrated softness)
       else if (contactRect && contactRect.bottom > 0) {

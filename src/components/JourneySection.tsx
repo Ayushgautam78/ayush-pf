@@ -156,7 +156,7 @@ export function JourneySection() {
     <div
       id="journey"
       ref={containerRef}
-      className="relative w-full min-h-[520px] h-screen overflow-hidden bg-[var(--bg-primary)] border-t border-[var(--border-subtle)] flex flex-col justify-between"
+      className="relative w-full min-h-[520px] h-screen overflow-hidden bg-[var(--bg-primary)] border-t border-[var(--border-subtle)] flex flex-col justify-start sm:justify-between"
       aria-label="The Path and Journey"
     >
       {/* Background subtle crimson ambient depth */}
@@ -170,13 +170,13 @@ export function JourneySection() {
       />
 
       {/* Pinned Top Bar (Compact & Responsive) */}
-      <div className="relative z-20 w-full pt-4 sm:pt-6 md:pt-8 px-6 md:px-12 flex-shrink-0">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2.5 border-b border-white/10">
+      <div className="relative z-20 w-full pt-3 sm:pt-6 md:pt-8 px-4 sm:px-8 md:px-12 flex-shrink-0">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 pb-2 border-b border-white/10">
           <div>
             <p className="text-micro text-[var(--crimson)] tracking-[0.25em] uppercase mb-1 font-semibold">
               Chronicles & Milestones
             </p>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] uppercase tracking-wide">
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] uppercase tracking-wide">
               The Path
             </h2>
           </div>
@@ -229,7 +229,7 @@ export function JourneySection() {
 
       {/* Pinned Horizontal Translating Track (Centered & Thin & Fully Visible) */}
       <div
-        className="relative z-10 w-full flex-1 flex items-center overflow-visible py-1 sm:py-2"
+        className="relative z-10 w-full flex-1 flex items-start sm:items-center overflow-visible pt-3 sm:pt-0 pb-1 sm:py-2"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -243,7 +243,7 @@ export function JourneySection() {
               <div
                 key={stage.indexStr}
                 onClick={() => jumpToStage(idx)}
-                className={`relative flex flex-col justify-between w-[275px] sm:w-[340px] md:w-[370px] h-[275px] sm:h-[295px] p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer backdrop-blur-xl ${
+                className={`relative flex flex-col justify-between w-[285px] sm:w-[340px] md:w-[370px] h-[310px] sm:h-[295px] p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer backdrop-blur-xl ${
                   isActive
                     ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_14px_36px_rgba(169,24,35,0.28)] scale-[1.01]"
                     : "bg-[#11131a]/80 border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.5)] hover:border-white/20 hover:bg-[#11131a]/95"
