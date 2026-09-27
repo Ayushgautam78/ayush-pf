@@ -24,6 +24,18 @@ export function SingleSwordSystem() {
   const scabbardRef = useRef<HTMLDivElement>(null);
   const glintRef = useRef<HTMLDivElement>(null);
 
+  // Physics-based smoothed state
+  const state = useRef({
+    x: 0,
+    y: 0,
+    rotation: 0,
+    scale: 1,
+    opacity: 0,
+    unsheathe: 0,
+    lastScrollY: 0,
+    scrollVelocity: 0,
+  });
+
   useEffect(() => {
     const container = containerRef.current;
     const sword = swordRef.current;
@@ -34,11 +46,24 @@ export function SingleSwordSystem() {
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
-    function tick() {
+    state.current.lastScrollY = window.scrollY;
+
+    function tick(time: number, deltaTime: number) {
       if (!container || !sword || !scabbard || !glint) return;
+
       const viewH = window.innerHeight;
       const vw = window.innerWidth;
       const mobile = vw < 768;
+
+      const dt = deltaTime ? Math.min(deltaTime / 1000, 0.08) : 0.016;
+      const tSec = typeof time === "number" ? time : performance.now() / 1000;
+
+      // Calculate instantaneous scroll velocity with smooth decay
+      const currentScrollY = window.scrollY;
+      const rawVelocity = (currentScrollY - state.current.lastScrollY) / (dt * 60);
+      state.current.lastScrollY = currentScrollY;
+      state.current.scrollVelocity = lerp(state.current.scrollVelocity, rawVelocity, 0.20);
+      const scrollVel = clamp(state.current.scrollVelocity, -30, 30);
 
       const heroEl = document.getElementById("hero");
       const introEl = document.getElementById("sword-intro");
@@ -56,153 +81,197 @@ export function SingleSwordSystem() {
       const journeyRect = journeyEl ? journeyEl.getBoundingClientRect() : null;
       const contactRect = contactEl ? contactEl.getBoundingClientRect() : null;
 
-      let opacity = 0;
-      let x = 0;
-      let y = 0;
-      let rotation = 0;
-      let scale = mobile ? 0.72 : 1.0;
-      let unsheatheProgress = 0;
+      let targetOpacity = 0;
+      let targetX = 0;
+      let targetY = 0;
+      let targetRotation = 0;
+      let targetScale = mobile ? 0.72 : 1.0;
+      let targetUnsheathe = 0;
 
       // 1. HERO PHASE: Completely invisible while viewing Hermes statue in Hero
       if (heroBottom > viewH * 0.5) {
-        opacity = 0;
-        unsheatheProgress = 0;
+        targetOpacity = 0;
+        targetUnsheathe = 0;
       }
-      // 2. SWORD INTRO PHASE: Dramatic Discovery & Unsheathe (Soft ethereal tone)
+      // 2. SWORD INTRO PHASE: Dramatic Discovery & Unsheathe with kinetic float
       else if (introRect && introRect.bottom > viewH * 0.1 && (!contribRect || contribRect.top > viewH * 0.15)) {
-        // Fade in smoothly as Hero leaves
         const appearT = clamp((viewH * 0.5 - heroBottom) / (viewH * 0.25), 0, 1);
-
-        // Fade out smoothly before Contributions arrives
         let exitT = 1;
         if (contribRect && contribRect.top < viewH * 0.7) {
           exitT = clamp((contribRect.top - viewH * 0.15) / (viewH * 0.5), 0, 1);
         }
 
-        opacity = appearT * exitT * 0.28;
-
-        // Unsheathe progress: as user scrolls through introRect
+        targetOpacity = appearT * exitT * 0.32;
         const introProgress = clamp((viewH * 0.75 - introRect.top) / (introRect.height * 0.65), 0, 1);
-        unsheatheProgress = introProgress;
+        targetUnsheathe = introProgress;
 
-        x = 0;
-        y = 0;
-        rotation = 0;
-        scale = mobile ? 0.72 : 1.0;
+        // Subtle ambient levitation + velocity responsiveness
+        targetX = Math.cos(tSec * 2.2) * 3;
+        targetY = Math.sin(tSec * 2.8) * 6 + clamp(scrollVel * 0.8, -25, 25);
+        targetRotation = Math.cos(tSec * 2.4) * 1.5 + clamp(scrollVel * 0.2, -6, 6);
+        targetScale = mobile ? 0.72 : 1.0;
       }
-      // 3. CONTRIBUTIONS & WORK / CONTENT SHOWCASE: 100% HIDDEN (0% sword visibility over cards & video)
+      // 3. CONTRIBUTIONS & WORK / CONTENT SHOWCASE: 100% HIDDEN over cards & video
       else if (
         (contribRect && contribRect.top <= viewH * 0.15 && contribRect.bottom > -50) ||
         (workRect && workRect.top <= viewH * 0.15 && workRect.bottom > -50)
       ) {
-        opacity = 0;
-        unsheatheProgress = 1;
+        targetOpacity = 0;
+        targetUnsheathe = 1;
       }
-      // 4. ABOUT PHASE: Reappears unsheathed with subtle rotation (~22deg, toned down)
+      // 4. ABOUT PHASE: Reappears unsheathed with frequent harmonic rotation & gliding
       else if (aboutRect && aboutRect.top <= viewH * 0.85 && aboutRect.bottom > viewH * 0.15) {
-        unsheatheProgress = 1;
+        targetUnsheathe = 1;
         let enterT = 1;
         if (aboutRect.top > viewH * 0.5) {
           enterT = clamp((viewH - aboutRect.top) / (viewH * 0.5), 0, 1);
         }
-        opacity = 0.14 * enterT;
 
-        const t = clamp((viewH * 0.85 - aboutRect.top) / aboutRect.height, 0, 1);
-        x = lerp(0, mobile ? vw * 0.08 : vw * 0.16, t);
-        y = lerp(0, -viewH * 0.03, t);
-        rotation = lerp(0, 22, t);
-        scale = lerp(mobile ? 0.72 : 1.0, mobile ? 0.68 : 0.92, t);
+        const aboutProgress = clamp((viewH * 0.85 - aboutRect.top) / (aboutRect.height + viewH * 0.3), 0, 1);
+
+        // Frequent rhythmic movement across About:
+        const baseAboutY = lerp(-viewH * 0.12, viewH * 0.12, aboutProgress);
+        const waveAboutY = Math.sin(aboutProgress * Math.PI * 3) * (mobile ? 16 : 28);
+        const waveAboutX = lerp(mobile ? vw * 0.05 : vw * 0.10, mobile ? -vw * 0.03 : vw * 0.18, aboutProgress)
+                          + Math.sin(aboutProgress * Math.PI * 2) * (mobile ? 12 : 24);
+        const waveAboutRot = lerp(12, 34, aboutProgress) + Math.sin(aboutProgress * Math.PI * 3) * 6;
+
+        const velY = clamp(scrollVel * 1.3, -35, 35);
+        const velRot = clamp(scrollVel * 0.28, -8, 8);
+        const ambientY = Math.sin(tSec * 2.4) * 6;
+        const ambientX = Math.cos(tSec * 1.9) * 4;
+        const ambientRot = Math.cos(tSec * 2.1) * 1.5;
+
+        targetX = waveAboutX + ambientX;
+        targetY = baseAboutY + waveAboutY + velY + ambientY;
+        targetRotation = waveAboutRot + velRot + ambientRot;
+        targetScale = lerp(mobile ? 0.72 : 1.0, mobile ? 0.76 : 0.94, aboutProgress);
+        targetOpacity = 0.18 * enterT;
       }
-      // 5. JOURNEY PHASE: Rotates vertically to 90deg and travels dynamically along the spine
+      // 5. JOURNEY PHASE: Dynamic vertical sweep down the spine, frequent stage wave, and kinetic banking
       else if (journeyRect && journeyRect.bottom > viewH * 0.1) {
-        unsheatheProgress = 1;
+        targetUnsheathe = 1;
 
         const journeyST = ScrollTrigger.getById("journey-horizontal");
-        const pinProgress = journeyST ? journeyST.progress : 0;
+        const pinProgress = journeyST
+          ? journeyST.progress
+          : clamp(-journeyRect.top / Math.max(1, journeyRect.height), 0, 1);
 
         if (journeyRect.top > 0) {
-          // Entering Journey from About: rotate smoothly from 22deg to 90deg
+          // Entering Journey from About: rotate smoothly from 25deg to 90deg
           const enterT = clamp((viewH * 0.85 - journeyRect.top) / (viewH * 0.85), 0, 1);
-          opacity = lerp(0.14, 0.22, enterT);
-          x = lerp(mobile ? vw * 0.08 : vw * 0.16, 0, enterT);
-          y = lerp(-viewH * 0.03, mobile ? -viewH * 0.07 : -viewH * 0.10, enterT);
-          rotation = lerp(22, 90, enterT);
-          scale = lerp(mobile ? 0.68 : 0.92, mobile ? 0.85 : 1.05, enterT);
+          targetOpacity = lerp(0.18, 0.28, enterT);
+          targetX = lerp(mobile ? vw * 0.08 : vw * 0.16, 0, enterT);
+          targetY = lerp(-viewH * 0.03, mobile ? -viewH * 0.16 : -viewH * 0.22, enterT);
+          targetRotation = lerp(25, 90, enterT);
+          targetScale = lerp(mobile ? 0.68 : 0.92, mobile ? 0.82 : 1.05, enterT);
         } else {
-          // While Journey is pinned: sword travels dynamically down the central spine with scroll!
-          rotation = 90;
-          x = 0;
-          y = lerp(
-            mobile ? -viewH * 0.07 : -viewH * 0.10,
-            mobile ? viewH * 0.07 : viewH * 0.10,
+          // While Journey is pinned: rich, frequent motion traversing the spine across stages!
+          // 1. Long, expressive vertical sweep
+          const baseSweepY = lerp(
+            mobile ? -viewH * 0.16 : -viewH * 0.24,
+            mobile ? viewH * 0.16 : viewH * 0.24,
             pinProgress
           );
-          opacity = lerp(0.20, 0.28, Math.sin(Math.max(0.1, pinProgress) * Math.PI));
-          scale = mobile ? 0.85 : 1.05;
+
+          // 2. Frequent stage wave: 3 full harmonic waves as you scroll through all 4 milestones
+          const stageWaveX = Math.sin(pinProgress * Math.PI * 6) * (mobile ? 20 : 42);
+
+          // 3. Dynamic banking angle: blade aligns and tilts dynamically with each milestone turn
+          const stageWaveRot = 90 + Math.sin(pinProgress * Math.PI * 6) * 12;
+
+          // 4. Kinetic scroll velocity surge: immediate reaction whenever user scrolls
+          const velocityY = clamp(scrollVel * 1.6, -45, 45);
+          const velocityRot = clamp(scrollVel * 0.42, -14, 14);
+
+          // 5. Continuous ethereal floating & breathing
+          const ambientFloatY = Math.sin(tSec * 2.8) * (mobile ? 5 : 8);
+          const ambientFloatX = Math.cos(tSec * 2.2) * (mobile ? 3 : 6);
+          const ambientFloatRot = Math.cos(tSec * 2.5) * 2;
+
+          targetX = stageWaveX + ambientFloatX;
+          targetY = baseSweepY + velocityY + ambientFloatY;
+          targetRotation = stageWaveRot + velocityRot + ambientFloatRot;
+          targetScale = (mobile ? 0.82 : 1.05) + Math.sin(pinProgress * Math.PI * 6) * 0.04;
+          targetOpacity = lerp(0.24, 0.36, Math.sin(Math.max(0.1, pinProgress) * Math.PI));
         }
       }
-      // 7. CONTACT GATEWAY: CINEMATIC ZOOM-IN INTO PORTAL FLARE (Calibrated softness)
+      // 6. CONTACT GATEWAY: Cinematic zoom-in into portal flare
       else if (contactRect && contactRect.bottom > 0) {
-        unsheatheProgress = 1;
-        x = 0;
-        y = 0;
-        rotation = 90;
+        targetUnsheathe = 1;
+        targetX = Math.cos(tSec * 2.0) * 2;
+        targetY = Math.sin(tSec * 2.5) * 4;
+        targetRotation = 90;
 
         if (contactRect.top > 0) {
           const t = clamp((viewH - contactRect.top) / viewH, 0, 1);
-          opacity = lerp(0.16, 0.26, t);
-          scale = mobile ? 0.85 : 1.05;
+          targetOpacity = lerp(0.18, 0.30, t);
+          targetScale = mobile ? 0.85 : 1.05;
         } else {
           const scrollDistance = Math.max(1, contactRect.height - viewH);
           const zoomProgress = clamp(-contactRect.top / scrollDistance, 0, 1);
 
           const swordT = Math.min(zoomProgress / 0.6, 1);
-          scale = lerp(mobile ? 0.85 : 1.05, mobile ? 4.5 : 10, Math.pow(swordT, 1.8));
+          targetScale = lerp(mobile ? 0.85 : 1.05, mobile ? 4.5 : 10, Math.pow(swordT, 1.8));
 
           if (swordT <= 0.35) {
-            opacity = 0.26;
+            targetOpacity = 0.28;
           } else {
-            // Dissolve gracefully into the glowing crimson flare
-            opacity = clamp(lerp(0.26, 0, (swordT - 0.35) / 0.28), 0, 0.26);
+            targetOpacity = clamp(lerp(0.28, 0, (swordT - 0.35) / 0.28), 0, 0.28);
           }
         }
       }
-      // 8. FOOTER / OFF-SCREEN: COMPLETELY HIDDEN
+      // 7. FOOTER / OFF-SCREEN: COMPLETELY HIDDEN
       else {
-        opacity = 0;
-        unsheatheProgress = 1;
+        targetOpacity = 0;
+        targetUnsheathe = 1;
       }
 
-      if (opacity <= 0.01) {
+      // Physics Interpolation: smooth frame-to-frame damping
+      const smoothFactor = clamp(1 - Math.pow(0.001, dt), 0.08, 0.22);
+      const curr = state.current;
+      curr.x = lerp(curr.x, targetX, smoothFactor);
+      curr.y = lerp(curr.y, targetY, smoothFactor);
+      curr.rotation = lerp(curr.rotation, targetRotation, smoothFactor);
+      curr.scale = lerp(curr.scale, targetScale, smoothFactor);
+      curr.opacity = lerp(curr.opacity, targetOpacity, smoothFactor);
+      curr.unsheathe = lerp(curr.unsheathe, targetUnsheathe, smoothFactor);
+
+      if (curr.opacity <= 0.01) {
         container.style.visibility = "hidden";
         container.style.opacity = "0";
       } else {
         container.style.visibility = "visible";
-        container.style.opacity = String(opacity);
+        container.style.opacity = String(curr.opacity);
         container.style.transform =
-          `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${scale})`;
+          `translate(-50%, -50%) translate(${curr.x}px, ${curr.y}px) rotate(${curr.rotation}deg) scale(${curr.scale})`;
       }
 
-      // Unsheathe mechanics
-      if (unsheatheProgress <= 0.02) {
+      // Unsheathe mechanics & glint
+      if (curr.unsheathe <= 0.02) {
         sword.style.transform = "translateX(0%)";
         scabbard.style.transform = "translateX(0%) rotate(0deg) translateY(0px)";
         scabbard.style.opacity = "1";
         glint.style.opacity = "0";
-      } else if (unsheatheProgress < 0.92) {
-        const u = unsheatheProgress;
+      } else if (curr.unsheathe < 0.92) {
+        const u = curr.unsheathe;
         sword.style.transform = `translateX(${-38 * u}%)`;
         const s = Math.min(u * 1.3, 1);
         scabbard.style.transform = `translateX(${38 * s}%) rotate(${10 * s}deg) translateY(${120 * s}px)`;
         scabbard.style.opacity = String(Math.max(0, 1 - s * 1.25));
 
         const g = clamp((u - 0.15) / 0.55, 0, 1);
-        glint.style.opacity = String(g > 0 && g < 1 ? 0.75 : 0);
+        glint.style.opacity = String(g > 0 && g < 1 ? 0.85 : 0);
         glint.style.transform = `translateX(${lerp(-60, 240, g)}%)`;
       } else {
         sword.style.transform = "translateX(-38%)";
         scabbard.style.opacity = "0";
-        glint.style.opacity = "0";
+        // Subtle flare when scrolling fast during active sections
+        const isFastScroll = Math.abs(scrollVel) > 10 && curr.opacity > 0.15;
+        glint.style.opacity = isFastScroll ? "0.38" : "0";
+        if (isFastScroll) {
+          glint.style.transform = `translateX(${Math.sin(tSec * 4) * 120 + 60}%)`;
+        }
       }
     }
 
