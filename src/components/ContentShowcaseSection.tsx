@@ -167,7 +167,7 @@ export function ContentShowcaseSection() {
     <div
       id="work"
       ref={containerRef}
-      className="relative w-full h-screen min-h-[520px] max-h-[920px] bg-[#090a0e] border-t border-b border-white/10 flex flex-col justify-start sm:justify-between overflow-hidden select-none"
+      className="relative w-full h-screen min-h-[570px] max-h-[920px] bg-[#090a0e] border-t border-b border-white/10 flex flex-col justify-start sm:justify-between overflow-hidden select-none"
       aria-label="Content Showcase and Live Applications Strip"
     >
       {/* Background Subtle Ambient Lighting */}
@@ -212,7 +212,7 @@ export function ContentShowcaseSection() {
       </div>
 
       {/* Pinned Horizontal Translating Track (Centered & Tight on Mobile) */}
-      <div className="relative z-10 w-full flex-1 flex items-start sm:items-center overflow-visible pt-3 sm:pt-0 pb-1 sm:py-4">
+      <div className="relative z-10 w-full flex-1 flex items-center overflow-visible py-2 sm:py-4">
         {/* Left & Right Subtle Vignette Masks */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-[#090a0e] to-transparent z-20" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-[#090a0e] to-transparent z-20" />
@@ -230,7 +230,7 @@ export function ContentShowcaseSection() {
                 <div
                   key={item.id}
                   onClick={() => setBotModalOpen(true)}
-                  className={`group relative flex-shrink-0 w-[285px] sm:w-[340px] md:w-[370px] h-[310px] sm:h-[300px] rounded-2xl border transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none ${
+                  className={`group relative flex-shrink-0 w-[295px] sm:w-[340px] md:w-[370px] h-[355px] sm:h-[350px] md:h-[365px] rounded-2xl border transition-all duration-300 p-3.5 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none overflow-hidden ${
                     isActive
                       ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_12px_40px_rgba(169,24,35,0.35)] scale-[1.01]"
                       : "bg-[#0f1118]/85 border-white/10 hover:border-white/25 hover:bg-[#11131a]"
@@ -242,7 +242,7 @@ export function ContentShowcaseSection() {
                 >
                   {/* Top: Thumbnail Preview */}
                   <div>
-                    <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-white/10 bg-black/80 mb-3.5 shadow-inner group/img">
+                    <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-white/10 bg-black/80 mb-2.5 sm:mb-3 shadow-inner group/img flex-shrink-0">
                       <picture>
                         <source srcSet={item.thumbnailWebp} type="image/webp" />
                         <img
@@ -264,7 +264,7 @@ export function ContentShowcaseSection() {
                     </div>
 
                     {/* Meta Row: Numeral & Category */}
-                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <div className="flex items-center justify-between gap-2 mb-1 sm:mb-1.5">
                       <span className="text-[0.68rem] font-mono text-[var(--crimson)] font-bold">
                         #{item.orderNumber}
                       </span>
@@ -274,30 +274,35 @@ export function ContentShowcaseSection() {
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-base sm:text-lg font-bold text-[var(--ivory)] group-hover:text-[var(--crimson-bright)] transition-colors leading-snug line-clamp-1">
+                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-[var(--ivory)] group-hover:text-[var(--crimson-bright)] transition-colors leading-snug line-clamp-1">
                       {item.title}
                     </h3>
 
                     {/* Tagline */}
-                    <p className="text-[0.74rem] text-[var(--text-secondary)] line-clamp-2 mt-1 leading-relaxed font-light">
+                    <p className="text-[0.70rem] sm:text-[0.74rem] text-[var(--text-secondary)] line-clamp-2 mt-0.5 sm:mt-1 leading-relaxed font-light">
                       {item.tagline}
                     </p>
                   </div>
 
                   {/* Bottom Action Row (Functions as button) */}
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      {item.techTags.map((tag) => (
+                  <div className="mt-2.5 pt-2.5 sm:mt-3 sm:pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1 overflow-hidden min-w-0">
+                      {item.techTags.slice(0, 2).map((tag) => (
                         <span
                           key={tag}
-                          className="text-[0.58rem] font-mono px-1.5 py-0.5 rounded bg-black/40 text-white/60 border border-white/5"
+                          className="text-[0.56rem] sm:text-[0.58rem] font-mono px-1.5 py-0.5 rounded bg-black/40 text-white/60 border border-white/5 truncate max-w-[85px]"
                         >
                           {tag}
                         </span>
                       ))}
+                      {item.techTags.length > 2 && (
+                        <span className="hidden sm:inline-block text-[0.56rem] font-mono px-1.5 py-0.5 rounded bg-black/40 text-white/60 border border-white/5">
+                          +{item.techTags.length - 2}
+                        </span>
+                      )}
                     </div>
 
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--crimson-bright)] group-hover:underline">
+                    <span className="inline-flex items-center gap-1 text-[0.68rem] sm:text-xs font-semibold text-[var(--crimson-bright)] group-hover:underline flex-shrink-0">
                       <span>Explore Specs</span>
                       <span>✦</span>
                     </span>
@@ -313,7 +318,7 @@ export function ContentShowcaseSection() {
                 href={item.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group relative flex-shrink-0 w-[285px] sm:w-[340px] md:w-[370px] h-[310px] sm:h-[300px] rounded-2xl border transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none ${
+                className={`group relative flex-shrink-0 w-[295px] sm:w-[340px] md:w-[370px] h-[355px] sm:h-[350px] md:h-[365px] rounded-2xl border transition-all duration-300 p-3.5 sm:p-5 flex flex-col justify-between cursor-pointer backdrop-blur-xl active:scale-[0.985] select-none overflow-hidden ${
                   isActive
                     ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_12px_40px_rgba(169,24,35,0.35)] scale-[1.01]"
                     : "bg-[#0f1118]/85 border-white/10 hover:border-white/25 hover:bg-[#11131a]"
@@ -323,7 +328,7 @@ export function ContentShowcaseSection() {
               >
                 {/* Top: Thumbnail Preview */}
                 <div>
-                  <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-white/10 bg-black/80 mb-3.5 shadow-inner group/img">
+                  <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-white/10 bg-black/80 mb-2.5 sm:mb-3 shadow-inner group/img flex-shrink-0">
                     <picture>
                       <source srcSet={item.thumbnailWebp} type="image/webp" />
                       <img
@@ -347,7 +352,7 @@ export function ContentShowcaseSection() {
                   </div>
 
                   {/* Meta Row: Numeral & Category */}
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center justify-between gap-2 mb-1 sm:mb-1.5">
                     <span className="text-[0.68rem] font-mono text-[var(--crimson)] font-bold">
                       #{item.orderNumber}
                     </span>
@@ -357,30 +362,35 @@ export function ContentShowcaseSection() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-base sm:text-lg font-bold text-[var(--ivory)] group-hover:text-[var(--crimson-bright)] transition-colors leading-snug line-clamp-1">
+                  <h3 className="text-sm sm:text-base md:text-lg font-bold text-[var(--ivory)] group-hover:text-[var(--crimson-bright)] transition-colors leading-snug line-clamp-1">
                     {item.title}
                   </h3>
 
                   {/* Tagline */}
-                  <p className="text-[0.74rem] text-[var(--text-secondary)] line-clamp-2 mt-1 leading-relaxed font-light">
+                  <p className="text-[0.70rem] sm:text-[0.74rem] text-[var(--text-secondary)] line-clamp-2 mt-0.5 sm:mt-1 leading-relaxed font-light">
                     {item.tagline}
                   </p>
                 </div>
 
                 {/* Bottom Action Row (Functions as button) */}
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    {item.techTags.map((tag) => (
+                <div className="mt-2.5 pt-2.5 sm:mt-3 sm:pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1 overflow-hidden min-w-0">
+                    {item.techTags.slice(0, 2).map((tag) => (
                       <span
                         key={tag}
-                        className="text-[0.58rem] font-mono px-1.5 py-0.5 rounded bg-black/40 text-white/60 border border-white/5"
+                        className="text-[0.56rem] sm:text-[0.58rem] font-mono px-1.5 py-0.5 rounded bg-black/40 text-white/60 border border-white/5 truncate max-w-[85px]"
                       >
                         {tag}
                       </span>
                     ))}
+                    {item.techTags.length > 2 && (
+                      <span className="hidden sm:inline-block text-[0.56rem] font-mono px-1.5 py-0.5 rounded bg-black/40 text-white/60 border border-white/5">
+                        +{item.techTags.length - 2}
+                      </span>
+                    )}
                   </div>
 
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--crimson-bright)] group-hover:underline">
+                  <span className="inline-flex items-center gap-1 text-[0.68rem] sm:text-xs font-semibold text-[var(--crimson-bright)] group-hover:underline flex-shrink-0">
                     <span>Launch App</span>
                     <span className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 font-bold">
                       ↗

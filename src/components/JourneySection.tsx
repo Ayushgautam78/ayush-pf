@@ -213,7 +213,7 @@ export function JourneySection() {
               <div
                 key={stage.indexStr}
                 onClick={() => jumpToStage(idx)}
-                className={`relative flex flex-col justify-between w-[285px] sm:w-[340px] md:w-[370px] h-[310px] sm:h-[295px] p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer backdrop-blur-xl ${
+                className={`relative flex flex-col justify-between w-[295px] sm:w-[340px] md:w-[370px] h-[330px] sm:h-[305px] p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer backdrop-blur-xl overflow-hidden ${
                   isActive
                     ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_14px_36px_rgba(169,24,35,0.28)] scale-[1.01]"
                     : "bg-[#11131a]/80 border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.5)] hover:border-white/20 hover:bg-[#11131a]/95"
