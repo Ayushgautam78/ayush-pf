@@ -6,12 +6,12 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative z-10 px-[var(--content-padding)] py-14 md:py-20 border-t border-[var(--border-subtle)] bg-[var(--bg-primary)]">
+    <footer className="relative z-10 px-[var(--content-padding)] py-14 md:py-20 border-t border-white/10 bg-[var(--bg-primary)] text-[var(--ivory)]">
       <div className="max-w-6xl mx-auto">
         {/* Top section */}
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 mb-12 pb-10 border-b border-[var(--border-subtle)]">
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 mb-12 pb-10 border-b border-white/10">
           <div>
-            <p className="text-[0.65rem] text-[var(--text-muted)] tracking-[0.25em] uppercase mb-3">
+            <p className="text-[0.65rem] text-[var(--crimson)] tracking-[0.25em] uppercase mb-3 font-semibold">
               Somewhere between structure and instinct.
             </p>
             <p className="text-sm text-[var(--text-secondary)] font-light max-w-md leading-relaxed">
@@ -22,7 +22,7 @@ export function Footer() {
           {/* Email link: prominent */}
           <a
             href="mailto:hello@ayush.dev"
-            className="text-sm text-[var(--text-primary)] tracking-[0.12em] uppercase hover:opacity-70 transition-opacity"
+            className="text-sm text-[var(--ivory)] tracking-[0.12em] uppercase hover:text-[var(--crimson)] transition-colors border-b border-[var(--crimson)] pb-0.5"
           >
             hello@ayush.dev
           </a>
@@ -37,7 +37,7 @@ export function Footer() {
               href="https://x.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="group flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--crimson)] transition-colors"
               aria-label="Twitter / X"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -51,7 +51,7 @@ export function Footer() {
               href="https://instagram.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="group flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--crimson)] transition-colors"
               aria-label="Instagram"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -67,7 +67,7 @@ export function Footer() {
               href="https://github.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="group flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--crimson)] transition-colors"
               aria-label="GitHub"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -81,7 +81,7 @@ export function Footer() {
               href="https://linkedin.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="group flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--crimson)] transition-colors"
               aria-label="LinkedIn"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -92,14 +92,14 @@ export function Footer() {
           </div>
 
           {/* Bottom row */}
-          <div className="flex items-center gap-6 text-xs text-[var(--text-muted)]">
+          <div className="flex items-center gap-6 text-xs text-[var(--text-secondary)]">
             <p>© {new Date().getFullYear()} Ayush Gautam</p>
             <button
               onClick={scrollToTop}
-              className="hover:text-[var(--text-primary)] transition-colors cursor-pointer group flex items-center gap-1"
+              className="hover:text-[var(--crimson)] transition-colors cursor-pointer group flex items-center gap-1"
             >
               <span>Top</span>
-              <span className="group-hover:-translate-y-0.5 transition-transform">↑</span>
+              <span className="group-hover:-translate-y-0.5 transition-transform text-[var(--crimson)]">↑</span>
             </button>
           </div>
         </div>

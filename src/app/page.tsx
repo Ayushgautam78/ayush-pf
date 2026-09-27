@@ -3,7 +3,6 @@ import { HeroSection } from "@/components/HeroSection";
 import { SwordIntroSection } from "@/components/SwordIntroSection";
 import { ContributionSection } from "@/components/ContributionSection";
 import { AboutSection } from "@/components/AboutSection";
-import { PhilosophySection } from "@/components/PhilosophySection";
 import { JourneySection } from "@/components/JourneySection";
 import { ContactGatewaySection } from "@/components/ContactGatewaySection";
 import { Footer } from "@/components/Footer";
@@ -24,9 +23,6 @@ export default function Home() {
 
       {/* About & Persona Pills & Vector Tech Badges */}
       <AboutSection />
-
-      {/* Design & Engineering Philosophy */}
-      <PhilosophySection />
 
       {/* Journey Timeline (Sword travels along spine) */}
       <JourneySection />

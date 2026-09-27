@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import gsap from "gsap";
 
 /**
  * SingleSwordSystem
  * 
  * Manages the single celestial sword across the portfolio:
  * - Hidden during Hero (Hermes statue).
- * - Appears and unsheathes smoothly in SwordIntroSection with golden glint.
+ * - Appears sheathed and unsheathes smoothly in SwordIntroSection with golden glint.
  * - COMPLETELY HIDDEN (0% visibility) in Contributions / Projects section.
  * - Reappears in About section with elegant rotating floating effect (~22deg).
  * - Rotates dynamically across Philosophy (~60deg).
  * - Aligns vertically (90deg) down the spine of Journey / The Path.
- * - Grand cinematic zoom-in at ContactGatewaySection (scales up to 34x into the flare).
+ * - Gracefully concludes and fades to 0 before Contact and Footer (no zoom trap, no lag).
  */
 export function SingleSwordSystem() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,8 +31,6 @@ export function SingleSwordSystem() {
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
-    let rafId: number;
-
     function tick() {
       if (!container || !sword || !scabbard || !glint) return;
       const viewH = window.innerHeight;
@@ -42,7 +41,6 @@ export function SingleSwordSystem() {
       const introEl = document.getElementById("sword-intro");
       const contribEl = document.getElementById("contributions");
       const aboutEl = document.getElementById("about");
-      const philEl = document.getElementById("philosophy");
       const journeyEl = document.getElementById("journey");
       const contactEl = document.getElementById("contact");
 
@@ -50,22 +48,8 @@ export function SingleSwordSystem() {
       const introRect = introEl ? introEl.getBoundingClientRect() : null;
       const contribRect = contribEl ? contribEl.getBoundingClientRect() : null;
       const aboutRect = aboutEl ? aboutEl.getBoundingClientRect() : null;
-      const philRect = philEl ? philEl.getBoundingClientRect() : null;
       const journeyRect = journeyEl ? journeyEl.getBoundingClientRect() : null;
       const contactRect = contactEl ? contactEl.getBoundingClientRect() : null;
-
-      // 1. STRICT PRIORITY: CONTRIBUTIONS SECTION MUST HAVE 0% SWORD VISIBILITY
-      // If Contributions is entering the viewport or currently on screen, sword is 100% hidden
-      const isContribEnteringOrActive =
-        contribRect && contribRect.top < viewH * 1.05 && contribRect.bottom > -50;
-
-      if (isContribEnteringOrActive) {
-        container.style.opacity = "0";
-        container.style.visibility = "hidden";
-        container.style.pointerEvents = "none";
-        rafId = requestAnimationFrame(tick);
-        return;
-      }
 
       let opacity = 0;
       let x = 0;
@@ -74,24 +58,26 @@ export function SingleSwordSystem() {
       let scale = mobile ? 0.72 : 1.0;
       let unsheatheProgress = 0;
 
-      // 2. HERO PHASE: Invisible while viewing 3D Hermes head
-      if (heroBottom > viewH * 0.45) {
+      // 1. HERO PHASE: Completely invisible while viewing Hermes statue in Hero
+      if (heroBottom > viewH * 0.5) {
         opacity = 0;
         unsheatheProgress = 0;
       }
-      // 3. SWORD INTRO PHASE: Fade in & Unsheathe smoothly
-      else if (introRect && introRect.bottom > 0) {
-        const appearT = clamp((viewH * 0.45 - heroBottom) / (viewH * 0.35), 0, 1);
-        
-        // As we approach contributions, fade to 0 before contributions hits viewport
+      // 2. SWORD INTRO PHASE: Dramatic Discovery & Unsheathe (Soft ethereal tone)
+      else if (introRect && introRect.bottom > viewH * 0.1 && (!contribRect || contribRect.top > viewH * 0.15)) {
+        // Fade in smoothly as Hero leaves
+        const appearT = clamp((viewH * 0.5 - heroBottom) / (viewH * 0.25), 0, 1);
+
+        // Fade out smoothly before Contributions arrives
         let exitT = 1;
-        if (contribRect && contribRect.top < viewH * 1.25) {
-          exitT = clamp((contribRect.top - viewH * 1.05) / (viewH * 0.2), 0, 1);
+        if (contribRect && contribRect.top < viewH * 0.7) {
+          exitT = clamp((contribRect.top - viewH * 0.15) / (viewH * 0.5), 0, 1);
         }
 
-        opacity = appearT * exitT * 0.65;
+        opacity = appearT * exitT * 0.28;
 
-        const introProgress = clamp((viewH * 0.85 - introRect.top) / (introRect.height * 0.85), 0, 1);
+        // Unsheathe progress: as user scrolls through introRect
+        const introProgress = clamp((viewH * 0.75 - introRect.top) / (introRect.height * 0.65), 0, 1);
         unsheatheProgress = introProgress;
 
         x = 0;
@@ -99,17 +85,19 @@ export function SingleSwordSystem() {
         rotation = 0;
         scale = mobile ? 0.72 : 1.0;
       }
-      // 4. ABOUT PHASE: Reappears unsheathed with elegant rotation (~22deg)
+      // 3. CONTRIBUTIONS SECTION: 100% HIDDEN (0% sword visibility over the video)
+      else if (contribRect && contribRect.top <= viewH * 0.15 && contribRect.bottom > -50) {
+        opacity = 0;
+        unsheatheProgress = 1;
+      }
+      // 4. ABOUT PHASE: Reappears unsheathed with subtle rotation (~22deg, toned down)
       else if (aboutRect && aboutRect.bottom > viewH * 0.15) {
         unsheatheProgress = 1;
-
-        // Fade in smoothly as contributions leaves
         let enterT = 1;
         if (aboutRect.top > viewH * 0.5) {
           enterT = clamp((viewH - aboutRect.top) / (viewH * 0.5), 0, 1);
         }
-
-        opacity = 0.42 * enterT;
+        opacity = 0.14 * enterT;
 
         const t = clamp((viewH * 0.85 - aboutRect.top) / aboutRect.height, 0, 1);
         x = lerp(0, mobile ? vw * 0.08 : vw * 0.16, t);
@@ -117,30 +105,19 @@ export function SingleSwordSystem() {
         rotation = lerp(0, 22, t);
         scale = lerp(mobile ? 0.72 : 1.0, mobile ? 0.68 : 0.92, t);
       }
-      // 5. PHILOSOPHY PHASE: Dynamic floating rotation (~60deg)
-      else if (philRect && philRect.bottom > viewH * 0.15) {
-        opacity = 0.32;
-        unsheatheProgress = 1;
-
-        const t = clamp((viewH * 0.85 - philRect.top) / philRect.height, 0, 1);
-        x = lerp(mobile ? vw * 0.08 : vw * 0.16, mobile ? vw * 0.05 : vw * 0.1, t);
-        y = lerp(-viewH * 0.03, 0, t);
-        rotation = lerp(22, 60, t);
-        scale = lerp(mobile ? 0.68 : 0.92, mobile ? 0.75 : 0.98, t);
-      }
-      // 6. JOURNEY PHASE: Rotates vertically to 90deg down the spine
+      // 5. JOURNEY PHASE: Rotates vertically from 22deg to 90deg down the spine (Subtle spine guide)
       else if (journeyRect && journeyRect.bottom > viewH * 0.1) {
         unsheatheProgress = 1;
 
         const t = clamp((viewH * 0.85 - journeyRect.top) / journeyRect.height, 0, 1);
-        opacity = lerp(0.32, 0.55, t);
-        x = lerp(mobile ? vw * 0.05 : vw * 0.1, 0, t);
-        y = 0;
-        rotation = lerp(60, 90, t);
-        scale = lerp(mobile ? 0.75 : 0.98, mobile ? 0.85 : 1.05, t);
+        opacity = lerp(0.14, 0.22, t);
+        x = lerp(mobile ? vw * 0.08 : vw * 0.16, 0, t);
+        y = lerp(-viewH * 0.03, 0, t);
+        rotation = lerp(22, 90, t);
+        scale = lerp(mobile ? 0.68 : 0.92, mobile ? 0.85 : 1.05, t);
       }
-      // 7. CONTACT GATEWAY: CINEMATIC ZOOM-IN OPENING COLLAPSE/COLLAB DOOR
-      else if (contactRect) {
+      // 7. CONTACT GATEWAY: CINEMATIC ZOOM-IN INTO PORTAL FLARE (Calibrated softness)
+      else if (contactRect && contactRect.bottom > 0) {
         unsheatheProgress = 1;
         x = 0;
         y = 0;
@@ -148,58 +125,67 @@ export function SingleSwordSystem() {
 
         if (contactRect.top > 0) {
           const t = clamp((viewH - contactRect.top) / viewH, 0, 1);
-          opacity = lerp(0.55, 0.7, t);
+          opacity = lerp(0.16, 0.26, t);
           scale = mobile ? 0.85 : 1.05;
         } else {
-          const scrollDistance = Math.max(1, (contactRect.height || viewH * 2.2) - viewH);
+          const scrollDistance = Math.max(1, contactRect.height - viewH);
           const zoomProgress = clamp(-contactRect.top / scrollDistance, 0, 1);
 
-          const swordT = Math.min(zoomProgress / 0.65, 1);
-          scale = lerp(mobile ? 0.85 : 1.05, mobile ? 18 : 34, Math.pow(swordT, 1.8));
+          const swordT = Math.min(zoomProgress / 0.6, 1);
+          scale = lerp(mobile ? 0.85 : 1.05, mobile ? 7 : 11, Math.pow(swordT, 1.8));
 
-          if (swordT <= 0.42) {
-            opacity = 0.7;
+          if (swordT <= 0.35) {
+            opacity = 0.26;
           } else {
-            opacity = lerp(0.7, 0, (swordT - 0.42) / 0.45);
+            // Dissolve gracefully into the glowing crimson flare
+            opacity = clamp(lerp(0.26, 0, (swordT - 0.35) / 0.28), 0, 0.26);
           }
         }
-      } else {
+      }
+      // 8. FOOTER / OFF-SCREEN: COMPLETELY HIDDEN
+      else {
         opacity = 0;
+        unsheatheProgress = 1;
       }
 
-      container.style.visibility = opacity > 0 ? "visible" : "hidden";
-      container.style.opacity = String(opacity);
-      container.style.transform =
-        `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${scale})`;
+      if (opacity <= 0.01) {
+        container.style.visibility = "hidden";
+        container.style.opacity = "0";
+      } else {
+        container.style.visibility = "visible";
+        container.style.opacity = String(opacity);
+        container.style.transform =
+          `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${scale})`;
+      }
 
       // Unsheathe mechanics
-      if (unsheatheProgress <= 0.05) {
+      if (unsheatheProgress <= 0.02) {
         sword.style.transform = "translateX(0%)";
         scabbard.style.transform = "translateX(0%) rotate(0deg) translateY(0px)";
         scabbard.style.opacity = "1";
         glint.style.opacity = "0";
-      } else if (unsheatheProgress < 1) {
+      } else if (unsheatheProgress < 0.92) {
         const u = unsheatheProgress;
         sword.style.transform = `translateX(${-38 * u}%)`;
-        const s = Math.min(u * 1.35, 1);
-        scabbard.style.transform = `translateX(${36 * s}%) rotate(${8 * s}deg) translateY(${120 * s}px)`;
-        scabbard.style.opacity = String(Math.max(0, 1 - s * 1.4));
+        const s = Math.min(u * 1.3, 1);
+        scabbard.style.transform = `translateX(${38 * s}%) rotate(${10 * s}deg) translateY(${120 * s}px)`;
+        scabbard.style.opacity = String(Math.max(0, 1 - s * 1.25));
 
-        const g = clamp((u - 0.25) / 0.5, 0, 1);
-        glint.style.opacity = String(g > 0 && g < 1 ? 0.95 : 0);
+        const g = clamp((u - 0.15) / 0.55, 0, 1);
+        glint.style.opacity = String(g > 0 && g < 1 ? 0.75 : 0);
         glint.style.transform = `translateX(${lerp(-60, 240, g)}%)`;
       } else {
         sword.style.transform = "translateX(-38%)";
         scabbard.style.opacity = "0";
         glint.style.opacity = "0";
       }
-
-      rafId = requestAnimationFrame(tick);
     }
 
-    rafId = requestAnimationFrame(tick);
+    gsap.ticker.add(tick);
 
-    return () => cancelAnimationFrame(rafId);
+    return () => {
+      gsap.ticker.remove(tick);
+    };
   }, []);
 
   return (
@@ -218,7 +204,6 @@ export function SingleSwordSystem() {
         opacity: 0,
         visibility: "hidden",
         transform: "translate(-50%, -50%)",
-        transition: "opacity 0.15s ease-out",
       }}
       aria-hidden="true"
     >
@@ -243,7 +228,7 @@ export function SingleSwordSystem() {
               height: "100%",
               objectFit: "contain",
               filter:
-                "drop-shadow(0 0 12px rgba(212,175,55,0.4)) drop-shadow(0 0 25px rgba(255,255,255,0.25))",
+                "drop-shadow(0 0 10px rgba(0,0,0,0.5)) drop-shadow(0 0 10px rgba(169,24,35,0.12))",
             }}
           />
           {/* Gleaming Glint Streak */}
@@ -258,7 +243,7 @@ export function SingleSwordSystem() {
               pointerEvents: "none",
               opacity: 0,
               background:
-                "linear-gradient(90deg, transparent, rgba(255,245,210,0.95) 50%, rgba(212,175,55,0.9) 70%, transparent)",
+                "linear-gradient(90deg, transparent, rgba(245,242,234,0.95) 50%, rgba(220,215,205,0.85) 70%, transparent)",
               filter: "blur(6px)",
               mixBlendMode: "screen",
             }}
@@ -289,7 +274,8 @@ export function SingleSwordSystem() {
               width: "100%",
               height: "100%",
               objectFit: "contain",
-              filter: "drop-shadow(0 0 10px rgba(0,0,0,0.5)) drop-shadow(0 0 20px rgba(212,175,55,0.25))",
+              filter:
+                "drop-shadow(0 0 10px rgba(0,0,0,0.55)) drop-shadow(0 0 14px rgba(169,24,35,0.14))",
             }}
           />
         </div>

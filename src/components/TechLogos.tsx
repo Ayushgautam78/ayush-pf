@@ -158,10 +158,10 @@ export function TechBadge({ tech }: { tech: TechItem }) {
       onMouseLeave={() => setHovered(false)}
       className="group relative flex items-center gap-2.5 px-3.5 py-2 rounded-xl border transition-all duration-300 cursor-default"
       style={{
-        borderColor: hovered ? "var(--accent)" : "var(--border-subtle)",
-        backgroundColor: hovered ? "#ffffff" : "var(--bg-elevated)",
+        borderColor: hovered ? "var(--crimson)" : "var(--border-subtle)",
+        backgroundColor: hovered ? "var(--charcoal-surface)" : "var(--bg-elevated)",
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        boxShadow: hovered ? "0 4px 16px rgba(245,158,11,0.12)" : "none",
+        boxShadow: hovered ? "0 4px 16px rgba(169,24,35,0.25)" : "none",
       }}
     >
       {/* Icon */}

@@ -42,17 +42,18 @@ export function Navigation() {
         <nav
           className={`pointer-events-auto flex items-center justify-between gap-4 md:gap-8 px-4 md:px-6 py-2.5 rounded-full border transition-all duration-500 ${
             isScrolled
-              ? "bg-[#f4efe6]/90 backdrop-blur-xl border-[var(--border-medium)] shadow-[0_4px_25px_rgba(0,0,0,0.06)]"
-              : "bg-[#f4efe6]/70 backdrop-blur-md border-[var(--border-subtle)]"
+              ? "bg-[#0d0f14]/90 backdrop-blur-xl border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+              : "bg-[#0d0f14]/75 backdrop-blur-md border-white/10"
           }`}
           style={{ maxWidth: "720px", width: "100%" }}
         >
-          {/* Logo */}
+          {/* Logo with signature crimson dot */}
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="text-xs font-bold text-[var(--text-primary)] hover:text-[var(--accent)] tracking-[0.15em] transition-colors cursor-pointer"
+            className="text-xs font-bold text-[var(--ivory)] tracking-[0.15em] transition-colors cursor-pointer flex items-center gap-0.5"
           >
-            AYUSH
+            <span>AYUSH</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--crimson)] inline-block ml-0.5" />
           </button>
 
           {/* Desktop Nav Links */}
@@ -61,18 +62,18 @@ export function Navigation() {
               <button
                 key={item.label}
                 onClick={() => scrollTo(item.href)}
-                className="text-[0.72rem] text-[var(--text-muted)] hover:text-[var(--text-primary)] tracking-[0.1em] uppercase transition-colors cursor-pointer font-medium"
+                className="text-[0.72rem] text-[var(--text-secondary)] hover:text-[var(--ivory)] tracking-[0.1em] uppercase transition-colors cursor-pointer font-medium"
               >
                 {item.label}
               </button>
             ))}
           </div>
 
-          {/* CTA */}
+          {/* CTA: Strong Crimson Anchor */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => scrollTo("#contact")}
-              className="px-4 py-1.5 rounded-full bg-[#0e1014] text-white hover:bg-[var(--accent)] hover:text-[#0e1014] text-[0.72rem] font-semibold tracking-wider transition-colors cursor-pointer"
+              className="px-4 py-1.5 rounded-full bg-[var(--crimson)] text-[var(--ivory)] hover:bg-[var(--crimson-bright)] text-[0.72rem] font-semibold tracking-wider transition-all duration-200 cursor-pointer shadow-[0_2px_12px_rgba(169,24,35,0.35)]"
             >
               Let&apos;s talk
             </button>
@@ -80,7 +81,7 @@ export function Navigation() {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden relative w-7 h-7 flex flex-col items-center justify-center gap-1 text-[var(--text-primary)] cursor-pointer"
+              className="md:hidden relative w-7 h-7 flex flex-col items-center justify-center gap-1 text-[var(--ivory)] cursor-pointer"
               aria-label={isOpen ? "Close menu" : "Open menu"}
             >
               <span
@@ -102,7 +103,7 @@ export function Navigation() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 z-40 bg-[var(--bg-primary)]/97 backdrop-blur-2xl flex flex-col items-center justify-center p-6"
+            className="fixed inset-0 z-40 bg-[var(--bg-primary)]/98 backdrop-blur-2xl flex flex-col items-center justify-center p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -113,7 +114,7 @@ export function Navigation() {
                 <button
                   key={item.label}
                   onClick={() => scrollTo(item.href)}
-                  className="text-lg font-light tracking-wide text-[var(--text-primary)] hover:opacity-70 transition-opacity cursor-pointer"
+                  className="text-lg font-light tracking-wide text-[var(--ivory)] hover:text-[var(--crimson)] transition-colors cursor-pointer"
                 >
                   {item.label}
                 </button>
@@ -123,7 +124,7 @@ export function Navigation() {
 
               <button
                 onClick={() => scrollTo("#contact")}
-                className="px-6 py-2.5 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] font-medium text-sm tracking-wider cursor-pointer"
+                className="px-6 py-2.5 rounded-full bg-[var(--crimson)] text-[var(--ivory)] font-medium text-sm tracking-wider cursor-pointer shadow-[0_4px_16px_rgba(169,24,35,0.4)]"
               >
                 Let&apos;s talk
               </button>

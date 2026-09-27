@@ -50,21 +50,32 @@ export function SwordIntroSection() {
     <section
       id="sword-intro"
       ref={containerRef}
-      className="relative w-full min-h-[48vh] md:min-h-[52vh] flex flex-col items-center justify-start pt-16 md:pt-20 px-4 pointer-events-none"
-      aria-label="Scroll to explore"
+      className="relative w-full min-h-[110vh] flex flex-col items-center justify-between pt-24 pb-20 px-4 pointer-events-none"
+      aria-label="The Celestial Blade"
     >
       {/* Scroll invitation */}
       <div
         ref={labelRef}
-        className="relative z-10 text-center max-w-xl mx-auto will-change-transform"
+        className="relative z-10 text-center max-w-xl mx-auto will-change-transform flex flex-col items-center pt-8"
       >
-        <p className="text-micro text-[var(--accent)] tracking-[0.3em] uppercase mb-2 font-semibold">
-          Scroll to explore
+        <span className="text-micro text-[var(--crimson)] tracking-[0.3em] uppercase mb-2 font-semibold">
+          ( The Celestial Blade )
+        </span>
+        <h2 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] uppercase tracking-wide mb-3">
+          Unsheathe &amp; Explore
+        </h2>
+        <p className="text-[0.72rem] text-[var(--text-secondary)] tracking-[0.25em] uppercase font-light">
+          Scroll down to draw the blade
         </p>
       </div>
 
-      {/* Spacer for sword unsheathing animation */}
-      <div className="w-full flex-1 flex items-center justify-center min-h-[200px]" />
+      {/* Center breathing space where the sword rests and unsheathes */}
+      <div className="w-full flex-1 min-h-[300px]" />
+
+      {/* Bottom hint leading to Contributions */}
+      <div className="relative z-10 text-center text-micro text-[var(--text-muted)] tracking-widest uppercase pb-4">
+        <span>Proceeding to Ecosystem</span>
+      </div>
     </section>
   );
 }

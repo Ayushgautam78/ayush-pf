@@ -20,13 +20,12 @@ export function SmoothScrollProvider({
     ).matches;
 
     const lenis = new Lenis({
-      duration: prefersReducedMotion ? 0.01 : 1.6,
+      duration: prefersReducedMotion ? 0.01 : 1.15,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 1.8,
+      touchMultiplier: 1.2,
       infinite: false,
       smoothWheel: true,
-      syncTouch: true,
-      syncTouchLerp: 0.06,
+      syncTouch: false,
     });
 
     lenisRef.current = lenis;
@@ -39,7 +38,6 @@ export function SmoothScrollProvider({
     };
 
     gsap.ticker.add(updateTicker);
-    gsap.ticker.lagSmoothing(0);
 
     return () => {
       gsap.ticker.remove(updateTicker);

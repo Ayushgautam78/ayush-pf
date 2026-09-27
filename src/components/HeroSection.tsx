@@ -69,20 +69,20 @@ export function HeroSection() {
     <section
       id="hero"
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden"
+      className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-[var(--bg-primary)]"
       aria-label="Hero: Ayush Portfolio"
     >
-      {/* Background Layer */}
+      {/* Background Layer: Near-black foundation with subtle atmospheric depth */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 45%, rgba(217, 138, 8, 0.05) 0%, rgba(234, 229, 220, 0.98) 75%)",
+            "radial-gradient(ellipse at 50% 45%, rgba(169, 24, 35, 0.07) 0%, rgba(9, 10, 13, 0.98) 75%)",
         }}
         aria-hidden="true"
       />
 
-      {/* Main Title Layer: BEHIND Hermes (z-10) */}
+      {/* Main Title Layer: BEHIND Hermes (z-10) - Bold Ivory & Crimson Contrast */}
       <div
         ref={titleContainerRef}
         className="relative z-10 w-full px-4 flex flex-col items-center justify-center text-center select-none pointer-events-none will-change-transform"
@@ -92,7 +92,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-          className="text-hero font-black tracking-[-0.04em] uppercase text-[var(--text-primary)] leading-[0.88]"
+          className="text-hero font-black tracking-[-0.04em] uppercase text-[var(--ivory)] leading-[0.88]"
         >
           AYUSH
         </motion.h1>
@@ -102,7 +102,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="text-hero font-black tracking-[-0.04em] uppercase text-[var(--text-secondary)] opacity-60 leading-[0.88] -mt-2 md:-mt-6"
+          className="text-hero font-black tracking-[-0.04em] uppercase text-[var(--crimson)] leading-[0.88] -mt-2 md:-mt-6"
         >
           PORTFOLIO
         </motion.h2>
@@ -116,19 +116,22 @@ export function HeroSection() {
         <HermesCharacter />
       </div>
 
-      {/* Subtitle, Action Buttons & Directional Indicator (z-30) */}
+      {/* Subtitle, Action Indicator & Directional Arrow (z-30) */}
       <div
         ref={subtitleRef}
         className="absolute bottom-8 md:bottom-12 left-0 right-0 z-30 flex flex-col items-center justify-center text-center px-4 pointer-events-auto"
       >
-        <motion.p
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="text-xs text-[var(--text-muted)] tracking-[0.2em] uppercase mb-6"
+          className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-white/10 bg-[#12141a]/85 backdrop-blur-sm mb-5 shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
         >
-          Creative Developer
-        </motion.p>
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--crimson)] inline-block" />
+          <span className="text-[0.68rem] text-[var(--ivory-dim)] tracking-[0.22em] uppercase font-medium">
+            Creative Developer
+          </span>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}
@@ -141,12 +144,12 @@ export function HeroSection() {
             height="20"
             viewBox="0 0 12 24"
             fill="none"
-            className="text-[var(--text-muted)] opacity-60"
+            className="text-[var(--text-secondary)] opacity-70 hover:text-[var(--crimson)] transition-colors"
           >
             <path
               d="M6 0v18m0 0l-4-4m4 4l4-4"
               stroke="currentColor"
-              strokeWidth="1"
+              strokeWidth="1.2"
             />
           </svg>
         </motion.div>
@@ -154,7 +157,7 @@ export function HeroSection() {
 
       {/* Bottom subtle divider */}
       <div className="absolute bottom-0 left-0 right-0 h-px">
-        <div className="w-full h-full bg-gradient-to-r from-transparent via-[var(--off-white-faint)] to-transparent" />
+        <div className="w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
     </section>
   );

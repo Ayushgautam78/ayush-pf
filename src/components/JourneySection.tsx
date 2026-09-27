@@ -132,30 +132,30 @@ export function JourneySection() {
       className="relative w-full min-h-[520px] h-screen overflow-hidden bg-[var(--bg-primary)] border-t border-[var(--border-subtle)] flex flex-col justify-between"
       aria-label="The Path and Journey"
     >
-      {/* Background warm yellow ambient glow */}
+      {/* Background subtle crimson ambient depth */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-30"
+        className="absolute inset-0 pointer-events-none opacity-40"
         style={{
           background:
-            "radial-gradient(ellipse 70% 50% at 50% 60%, rgba(245,158,11,0.06) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 50% at 50% 60%, rgba(169,24,35,0.06) 0%, transparent 70%)",
         }}
         aria-hidden="true"
       />
 
       {/* Pinned Top Bar (Compact & Responsive) */}
       <div className="relative z-20 w-full pt-4 sm:pt-6 md:pt-8 px-6 md:px-12 flex-shrink-0">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2.5 border-b border-[var(--border-subtle)]">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2.5 border-b border-white/10">
           <div>
-            <p className="text-micro text-[var(--accent)] tracking-[0.25em] uppercase mb-1 font-semibold">
+            <p className="text-micro text-[var(--crimson)] tracking-[0.25em] uppercase mb-1 font-semibold">
               Chronicles & Milestones
             </p>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)] uppercase tracking-wide">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] uppercase tracking-wide">
               The Path
             </h2>
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6">
-            <span className="hidden md:inline-flex items-center gap-1.5 text-micro text-[var(--text-muted)] tracking-wider uppercase font-medium">
+            <span className="hidden md:inline-flex items-center gap-1.5 text-micro text-[var(--text-secondary)] tracking-wider uppercase font-medium">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="5" y="2" width="14" height="20" rx="7" />
                 <line x1="12" y1="6" x2="12" y2="10" />
@@ -169,7 +169,7 @@ export function JourneySection() {
                 type="button"
                 onClick={() => jumpToStage(Math.max(0, activeIndex - 1))}
                 disabled={activeIndex === 0}
-                className="w-8 h-8 rounded-full border border-[var(--border-medium)] bg-white shadow-sm flex items-center justify-center text-[var(--text-primary)] hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+                className="w-8 h-8 rounded-full border border-white/15 bg-[#12141c] shadow-sm flex items-center justify-center text-[var(--ivory)] hover:border-[var(--crimson)] hover:text-[var(--crimson)] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
                 aria-label="Previous phase"
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -180,7 +180,7 @@ export function JourneySection() {
                 type="button"
                 onClick={() => jumpToStage(Math.min(JOURNEY_STAGES.length - 1, activeIndex + 1))}
                 disabled={activeIndex === JOURNEY_STAGES.length - 1}
-                className="w-8 h-8 rounded-full border border-[var(--border-medium)] bg-white shadow-sm flex items-center justify-center text-[var(--text-primary)] hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+                className="w-8 h-8 rounded-full border border-white/15 bg-[#12141c] shadow-sm flex items-center justify-center text-[var(--ivory)] hover:border-[var(--crimson)] hover:text-[var(--crimson)] disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
                 aria-label="Next phase"
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -192,19 +192,19 @@ export function JourneySection() {
         </div>
 
         {/* Global Progress Track */}
-        <div className="max-w-7xl mx-auto w-full h-[2.5px] bg-[var(--border-subtle)] mt-2 relative overflow-hidden rounded-full">
+        <div className="max-w-7xl mx-auto w-full h-[2.5px] bg-white/10 mt-2 relative overflow-hidden rounded-full">
           <div
-            className="h-full bg-[var(--accent)] transition-all duration-100 rounded-full"
+            className="h-full bg-[var(--crimson)] transition-all duration-100 rounded-full shadow-[0_0_8px_rgba(169,24,35,0.6)]"
             style={{ width: `${Math.max(10, scrollProgress * 100)}%` }}
           />
         </div>
       </div>
 
-      {/* Pinned Horizontal Translating Track (Centered & Fully Visible) */}
-      <div className="relative z-10 w-full flex-1 flex items-center overflow-visible py-2 sm:py-4">
+      {/* Pinned Horizontal Translating Track (Centered & Thin & Fully Visible) */}
+      <div className="relative z-10 w-full flex-1 flex items-center overflow-visible py-1 sm:py-2">
         <div
           ref={trackRef}
-          className="flex gap-6 sm:gap-8 items-stretch pl-6 sm:pl-10 md:pl-16 pr-28 w-max will-change-transform"
+          className="flex gap-5 sm:gap-6 items-center pl-6 sm:pl-10 md:pl-16 pr-28 w-max will-change-transform"
         >
           {JOURNEY_STAGES.map((stage, idx) => {
             const isActive = idx === activeIndex;
@@ -212,56 +212,56 @@ export function JourneySection() {
               <div
                 key={stage.indexStr}
                 onClick={() => jumpToStage(idx)}
-                className={`relative flex flex-col justify-between w-[340px] sm:w-[410px] md:w-[470px] p-6 sm:p-7 md:p-8 rounded-3xl border transition-all duration-300 cursor-pointer backdrop-blur-2xl ${
+                className={`relative flex flex-col justify-between w-[300px] sm:w-[340px] md:w-[370px] h-[275px] sm:h-[295px] p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer backdrop-blur-xl ${
                   isActive
-                    ? "bg-[#faf6ef]/95 border-[var(--accent)] shadow-[0_20px_50px_rgba(217,138,8,0.2),inset_0_1px_1px_rgba(255,255,255,0.9)] scale-[1.01]"
-                    : "bg-[#faf6ef]/80 border-black/[0.08] shadow-[0_16px_40px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:border-black/20 hover:bg-[#faf6ef]/95"
+                    ? "bg-[#141722]/95 border-[var(--crimson)] shadow-[0_14px_36px_rgba(169,24,35,0.28)] scale-[1.01]"
+                    : "bg-[#11131a]/80 border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.5)] hover:border-white/20 hover:bg-[#11131a]/95"
                 }`}
               >
                 <div>
                   {/* Top numeral and phase header */}
-                  <div className="flex items-center justify-between mb-4 pb-3 border-b border-black/[0.06]">
-                    <span className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-extrabold text-[var(--accent)] tracking-widest">
+                  <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
+                    <span className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-[var(--crimson)] tracking-widest leading-none">
                       {stage.numeral}
                     </span>
-                    <span className="text-[0.68rem] font-mono text-[var(--text-muted)] tracking-widest font-semibold px-2.5 py-0.5 rounded-full bg-black/[0.04]">
+                    <span className="text-[0.62rem] font-mono text-[var(--ivory-dim)] tracking-wider font-semibold px-2 py-0.5 rounded-full bg-white/[0.06]">
                       PHASE {stage.indexStr}
                     </span>
                   </div>
 
                   {/* Period */}
-                  <span className="inline-block text-[0.68rem] uppercase tracking-[0.2em] text-[var(--accent)] font-semibold mb-1">
+                  <span className="inline-block text-[0.62rem] uppercase tracking-[0.2em] text-[var(--crimson)] font-semibold mb-0.5">
                     {stage.period}
                   </span>
 
                   {/* Title */}
-                  <h3 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)] leading-[1.15] mb-2 whitespace-pre-line tracking-wide">
+                  <h3 className="text-sm sm:text-base font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] leading-tight mb-2 whitespace-pre-line tracking-wide">
                     {stage.title}
                   </h3>
 
-                  {/* Inset Translucent Content Box (Inspired by reference modal) */}
-                  <div className="my-3 p-4 sm:p-5 rounded-2xl bg-black/[0.025] border border-black/[0.06] backdrop-blur-sm shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]">
-                    <p className="text-xs sm:text-sm text-[var(--text-secondary)] font-normal leading-relaxed">
+                  {/* Thin Inset Content Box */}
+                  <div className="p-2.5 sm:p-3 rounded-xl bg-black/40 border border-white/10 backdrop-blur-sm">
+                    <p className="text-[0.72rem] sm:text-[0.78rem] text-[var(--ivory-dim)] font-normal leading-relaxed line-clamp-3">
                       {stage.description}
                     </p>
                   </div>
                 </div>
 
                 {/* Bottom Row: Milestone pills + Phase tag */}
-                <div className="pt-2 flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap gap-1.5">
-                    {stage.milestones.map((m) => (
+                <div className="pt-2 flex items-center justify-between gap-1.5 border-t border-white/10">
+                  <div className="flex flex-wrap gap-1">
+                    {stage.milestones.slice(0, 3).map((m) => (
                       <span
                         key={m}
-                        className="text-[0.66rem] tracking-wider uppercase font-semibold px-3 py-1 rounded-full bg-white/95 text-[var(--text-primary)] border border-black/[0.08] shadow-sm hover:border-[var(--accent)] transition-colors"
+                        className="text-[0.58rem] tracking-wider uppercase font-semibold px-2 py-0.5 rounded-md bg-[#181b25] text-[var(--ivory-dim)] border border-white/10"
                       >
                         {m}
                       </span>
                     ))}
                   </div>
 
-                  <span className="text-[0.68rem] font-semibold px-3 py-1 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] border border-[var(--accent)]/30">
-                    Phase {stage.indexStr}
+                  <span className="text-[0.6rem] font-semibold px-2 py-0.5 rounded-full bg-[var(--crimson)]/15 text-[var(--crimson)] border border-[var(--crimson)]/35 whitespace-nowrap">
+                    P{stage.indexStr}
                   </span>
                 </div>
               </div>
@@ -280,8 +280,8 @@ export function JourneySection() {
             aria-label={`Jump to phase ${s.numeral}`}
             className={`transition-all duration-300 rounded-full cursor-pointer ${
               i === activeIndex
-                ? "w-7 h-2 bg-[var(--accent)]"
-                : "w-2 h-2 bg-[var(--border-medium)] hover:bg-[var(--text-muted)]"
+                ? "w-7 h-2 bg-[var(--crimson)] shadow-[0_0_8px_rgba(169,24,35,0.6)]"
+                : "w-2 h-2 bg-white/20 hover:bg-white/40"
             }`}
           />
         ))}

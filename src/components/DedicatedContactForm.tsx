@@ -263,8 +263,8 @@ export function DedicatedContactForm() {
                         onClick={() => setFormData({ ...formData, topic })}
                         className={`px-3.5 py-1.5 rounded-full text-micro tracking-wider uppercase transition-all duration-200 border cursor-pointer ${
                           formData.topic === topic
-                            ? "bg-[var(--muted-bronze)] text-[var(--bg-primary)] border-[var(--muted-bronze)] font-bold shadow-[0_0_12px_rgba(140,128,101,0.3)]"
-                            : "bg-[var(--bg-primary)]/60 text-[var(--weathered-stone)] border-[var(--slate-blue)] hover:border-[var(--muted-bronze)]/50"
+                            ? "bg-[var(--crimson)] text-[var(--ivory)] border-[var(--crimson)] font-bold shadow-[0_0_12px_rgba(169,24,35,0.4)]"
+                            : "bg-[var(--bg-primary)]/60 text-[var(--text-secondary)] border-white/10 hover:border-[var(--crimson)]/50"
                         }`}
                       >
                         {topic}
@@ -284,7 +284,7 @@ export function DedicatedContactForm() {
                     value={formData.projectDetails}
                     onChange={(e) => setFormData({ ...formData, projectDetails: e.target.value })}
                     placeholder="Tell me about the product, tool, or website you have in mind..."
-                    className="w-full px-4 py-3 rounded-lg bg-[var(--bg-primary)]/80 border border-[var(--slate-blue)] text-[var(--warm-ivory)] placeholder-[var(--weathered-stone)]/40 focus:outline-none focus:border-[var(--muted-bronze)] transition-colors text-small resize-y"
+                    className="w-full px-4 py-3 rounded-lg bg-[var(--bg-primary)]/80 border border-white/15 text-[var(--warm-ivory)] placeholder-[var(--weathered-stone)]/40 focus:outline-none focus:border-[var(--crimson)] transition-colors text-small resize-y"
                   />
                 </div>
 
@@ -301,8 +301,8 @@ export function DedicatedContactForm() {
                         onClick={() => setFormData({ ...formData, budget: opt })}
                         className={`px-3.5 py-1.5 rounded-full text-micro tracking-wider uppercase transition-all duration-200 border cursor-pointer ${
                           formData.budget === opt
-                            ? "bg-[var(--muted-bronze)] text-[var(--bg-primary)] border-[var(--muted-bronze)] font-bold shadow-[0_0_12px_rgba(140,128,101,0.3)]"
-                            : "bg-[var(--bg-primary)]/60 text-[var(--weathered-stone)] border-[var(--slate-blue)] hover:border-[var(--muted-bronze)]/50"
+                            ? "bg-[var(--crimson)] text-[var(--ivory)] border-[var(--crimson)] font-bold shadow-[0_0_12px_rgba(169,24,35,0.4)]"
+                            : "bg-[var(--bg-primary)]/60 text-[var(--text-secondary)] border-white/10 hover:border-[var(--crimson)]/50"
                         }`}
                       >
                         {opt}
@@ -321,7 +321,7 @@ export function DedicatedContactForm() {
                     value={formData.moreInfo}
                     onChange={(e) => setFormData({ ...formData, moreInfo: e.target.value })}
                     placeholder="Timelines, existing references, specific tech preferences, or anything else..."
-                    className="w-full px-4 py-3 rounded-lg bg-[var(--bg-primary)]/80 border border-[var(--slate-blue)] text-[var(--warm-ivory)] placeholder-[var(--weathered-stone)]/40 focus:outline-none focus:border-[var(--muted-bronze)] transition-colors text-small resize-y"
+                    className="w-full px-4 py-3 rounded-lg bg-[var(--bg-primary)]/80 border border-white/15 text-[var(--warm-ivory)] placeholder-[var(--weathered-stone)]/40 focus:outline-none focus:border-[var(--crimson)] transition-colors text-small resize-y"
                   />
                 </div>
 
@@ -338,8 +338,8 @@ export function DedicatedContactForm() {
                         onClick={() => setFormData({ ...formData, contactMethod: method })}
                         className={`px-4 py-2 rounded-lg text-micro tracking-wider uppercase transition-all duration-200 border cursor-pointer ${
                           formData.contactMethod === method
-                            ? "border-[var(--muted-bronze)] bg-[var(--muted-bronze)]/20 text-[var(--warm-ivory)] font-semibold"
-                            : "border-[var(--slate-blue)] text-[var(--weathered-stone)] bg-[var(--bg-primary)]/50 hover:border-[var(--muted-bronze)]/50"
+                            ? "border-[var(--crimson)] bg-[var(--crimson)]/20 text-[var(--warm-ivory)] font-semibold"
+                            : "border-white/15 text-[var(--weathered-stone)] bg-[var(--bg-primary)]/50 hover:border-[var(--crimson)]/50"
                         }`}
                       >
                         {method}
@@ -353,7 +353,7 @@ export function DedicatedContactForm() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full md:w-auto px-10 py-4 rounded-xl bg-[var(--muted-bronze)] text-[var(--bg-primary)] text-small font-bold tracking-widest uppercase hover:bg-[var(--metallic-highlight)] hover:shadow-[0_0_25px_rgba(183,170,137,0.35)] transition-all duration-300 disabled:opacity-50 cursor-pointer"
+                    className="w-full md:w-auto px-10 py-4 rounded-xl bg-[var(--crimson)] text-[var(--ivory)] text-small font-bold tracking-widest uppercase hover:bg-[var(--crimson-bright)] hover:shadow-[0_0_25px_rgba(169,24,35,0.4)] transition-all duration-300 disabled:opacity-50 cursor-pointer"
                   >
                     {loading ? "Sending..." : "Submit Inquiry"}
                   </button>

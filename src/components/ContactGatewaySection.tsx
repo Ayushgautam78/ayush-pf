@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 
 const REASON_OPTIONS = [
   "Freelance project",
@@ -83,74 +84,137 @@ export function ContactGatewaySection() {
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
-    let rafId: number;
-    function tick() {
+    function update() {
       if (!container || !contactWrapper || !zoomFlare) return;
       const viewH = window.innerHeight;
       const rect = container.getBoundingClientRect();
+
+      if (rect.bottom < -50 || rect.top > viewH + 50) return;
+
       const scrollDistance = Math.max(1, rect.height - viewH);
       const progress = rect.top <= 0 ? clamp(-rect.top / scrollDistance, 0, 1) : 0;
 
-      // Flare
-      if (progress <= 0) { zoomFlare.style.opacity = "0.1"; zoomFlare.style.transform = "scale(0.5)"; }
-      else if (progress <= 0.45) { const ft = progress / 0.45; zoomFlare.style.opacity = String(lerp(0.1, 0.6, ft)); zoomFlare.style.transform = `scale(${lerp(0.5, 2.2, ft)})`; }
-      else { const ft = (progress - 0.45) / 0.55; zoomFlare.style.opacity = String(lerp(0.6, 0.04, ft)); zoomFlare.style.transform = `scale(${lerp(2.2, 5, ft)})`; }
-
-      // Reveal
-      if (progress < 0.38) {
-        contactWrapper.style.opacity = "0"; contactWrapper.style.visibility = "hidden";
-        contactWrapper.style.pointerEvents = "none"; contactWrapper.style.transform = "translateY(20px)"; contactWrapper.style.filter = "blur(8px)";
-      } else if (progress <= 0.82) {
-        const t = (progress - 0.38) / 0.44;
-        contactWrapper.style.visibility = "visible"; contactWrapper.style.opacity = String(t);
-        contactWrapper.style.transform = `translateY(${lerp(20, 0, t)}px)`; contactWrapper.style.filter = `blur(${lerp(8, 0, t)}px)`;
-        contactWrapper.style.pointerEvents = t >= 0.85 ? "auto" : "none";
+      // Flare scale and bloom
+      if (progress <= 0) {
+        zoomFlare.style.opacity = "0.08";
+        zoomFlare.style.transform = "scale(0.5)";
+      } else if (progress <= 0.45) {
+        const ft = progress / 0.45;
+        zoomFlare.style.opacity = String(lerp(0.08, 0.65, ft));
+        zoomFlare.style.transform = `scale(${lerp(0.5, 2.2, ft)})`;
       } else {
-        contactWrapper.style.visibility = "visible"; contactWrapper.style.opacity = "1";
-        contactWrapper.style.transform = "translateY(0)"; contactWrapper.style.filter = "blur(0)"; contactWrapper.style.pointerEvents = "auto";
+        const ft = (progress - 0.45) / 0.55;
+        zoomFlare.style.opacity = String(lerp(0.65, 0.05, ft));
+        zoomFlare.style.transform = `scale(${lerp(2.2, 4.5, ft)})`;
       }
-      rafId = requestAnimationFrame(tick);
+
+      // Smooth reveal of contact form without full-screen blur or trapping
+      if (progress < 0.35) {
+        contactWrapper.style.opacity = "0";
+        contactWrapper.style.visibility = "hidden";
+        contactWrapper.style.pointerEvents = "none";
+        contactWrapper.style.transform = "translateY(24px)";
+      } else if (progress <= 0.8) {
+        const t = (progress - 0.35) / 0.45;
+        contactWrapper.style.visibility = "visible";
+        contactWrapper.style.opacity = String(t);
+        contactWrapper.style.transform = `translateY(${lerp(24, 0, t)}px)`;
+        contactWrapper.style.pointerEvents = t >= 0.8 ? "auto" : "none";
+      } else {
+        contactWrapper.style.visibility = "visible";
+        contactWrapper.style.opacity = "1";
+        contactWrapper.style.transform = "translateY(0)";
+        contactWrapper.style.pointerEvents = "auto";
+      }
     }
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
+
+    gsap.ticker.add(update);
+    update();
+
+    return () => {
+      gsap.ticker.remove(update);
+    };
   }, []);
 
   return (
-    <section id="contact" ref={containerRef} className="relative w-full bg-[var(--bg-primary)] overflow-visible" style={{ minHeight: "220vh" }} aria-label="Contact">
+    <section
+      id="contact"
+      ref={containerRef}
+      className="relative w-full bg-[var(--bg-primary)] overflow-visible"
+      style={{ minHeight: "175vh" }}
+      aria-label="Contact"
+    >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
-        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(244,239,230,0.95) 0%, rgba(234,229,220,1) 85%)" }} aria-hidden="true" />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 50%, rgba(15,17,22,0.95) 0%, rgba(9,10,13,1) 85%)",
+          }}
+          aria-hidden="true"
+        />
 
-        {/* Flare */}
-        <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center overflow-hidden" aria-hidden="true">
-          <div ref={zoomFlareRef} className="absolute rounded-full will-change-transform" style={{ width: "clamp(250px, 38vw, 550px)", height: "clamp(250px, 38vw, 550px)", background: "radial-gradient(circle, rgba(217,138,8,0.2) 0%, rgba(217,138,8,0.05) 45%, transparent 75%)", filter: "blur(40px)", opacity: 0.1, transform: "scale(0.5)" }} />
-          <div className="absolute w-[1px] h-[150vh] pointer-events-none opacity-20" style={{ background: "linear-gradient(180deg, transparent, rgba(217,138,8,0.3) 50%, transparent)" }} />
+        {/* Cinematic Crimson & Ivory Portal Flare */}
+        <div
+          className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center overflow-hidden"
+          aria-hidden="true"
+        >
+          <div
+            ref={zoomFlareRef}
+            className="absolute rounded-full will-change-transform"
+            style={{
+              width: "clamp(250px, 38vw, 550px)",
+              height: "clamp(250px, 38vw, 550px)",
+              background:
+                "radial-gradient(circle, rgba(169,24,35,0.32) 0%, rgba(169,24,35,0.08) 45%, transparent 75%)",
+              filter: "blur(35px)",
+              opacity: 0.08,
+              transform: "scale(0.5)",
+            }}
+          />
+          <div
+            className="absolute w-[1px] h-[150vh] pointer-events-none opacity-30"
+            style={{
+              background:
+                "linear-gradient(180deg, transparent, rgba(169,24,35,0.5) 50%, transparent)",
+            }}
+          />
         </div>
 
-        {/* Contact form */}
-        <div ref={contactWrapperRef} data-lenis-prevent className="absolute inset-0 z-30 overflow-y-auto overflow-x-hidden flex justify-center py-10 md:py-16 will-change-transform"
-          style={{ background: "radial-gradient(circle at 50% 30%, rgba(250,246,239,0.99) 0%, rgba(244,239,230,1) 100%)", opacity: 0, visibility: "hidden", pointerEvents: "none", transform: "translateY(20px)", filter: "blur(8px)" }}>
-
-          <div className="w-full max-w-xl mx-auto px-6 md:px-10 py-12 md:py-20">
+        {/* Contact form in deep near-black/charcoal container - NO data-lenis-prevent, NO nested scroll trapping */}
+        <div
+          ref={contactWrapperRef}
+          className="absolute inset-0 z-30 flex items-center justify-center p-4 sm:p-6 md:p-8 will-change-transform"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 30%, rgba(18,20,27,0.99) 0%, rgba(9,10,13,1) 100%)",
+            opacity: 0,
+            visibility: "hidden",
+            pointerEvents: "none",
+            transform: "translateY(24px)",
+          }}
+        >
+          <div className="w-full max-w-xl mx-auto px-6 md:px-10 py-6 md:py-8 text-[var(--ivory)]">
             {submitted ? (
               <div className="text-center py-20 space-y-5">
-                <div className="w-14 h-14 rounded-full border border-[var(--border-medium)] mx-auto flex items-center justify-center">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--accent)]"><polyline points="20 6 9 17 4 12" /></svg>
+                <div className="w-14 h-14 rounded-full border border-[var(--crimson)] mx-auto flex items-center justify-center bg-[var(--crimson)]/10">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--crimson)]"><polyline points="20 6 9 17 4 12" /></svg>
                 </div>
-                <h3 className="text-2xl font-bold font-[family-name:var(--font-display)]">Details received</h3>
+                <h3 className="text-2xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)]">Details received</h3>
                 <p className="text-sm text-[var(--text-secondary)] max-w-sm mx-auto">Thank you for reaching out. I usually reply within 24 hours.</p>
-                <button type="button" onClick={() => setSubmitted(false)} className="mt-4 px-6 py-2.5 rounded-full border border-[var(--border-medium)] text-sm hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer">Send another</button>
+                <button type="button" onClick={() => setSubmitted(false)} className="mt-4 px-6 py-2.5 rounded-full border border-white/20 text-sm text-[var(--ivory)] hover:bg-[var(--crimson)] hover:border-[var(--crimson)] transition-colors cursor-pointer">Send another</button>
               </div>
             ) : (
               <>
                 {/* Header */}
-                <p className="text-micro text-[var(--text-muted)] tracking-[0.25em] mb-6">(Leave your details)</p>
-                <h2 className="text-3xl sm:text-4xl md:text-[3rem] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)] leading-[1] tracking-wide uppercase mb-6">
+                <p className="text-micro text-[var(--crimson)] tracking-[0.25em] mb-6 font-semibold">(Leave your details)</p>
+                <h2 className="text-3xl sm:text-4xl md:text-[3rem] font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] leading-[1] tracking-wide uppercase mb-6">
                   Open the door
                 </h2>
 
                 <div className="flex items-center gap-3 mb-12 md:mb-14">
-                  <span className="text-sm text-[var(--text-muted)]">Or just write:</span>
-                  <a href="mailto:hello@ayush.dev" className="text-sm md:text-base text-[var(--text-primary)] border-b border-[var(--text-primary)] pb-0.5 hover:opacity-70 transition-opacity">hello@ayush.dev</a>
+                  <span className="text-sm text-[var(--text-secondary)]">Or just write:</span>
+                  <a href="mailto:hello@ayush.dev" className="text-sm md:text-base text-[var(--ivory)] border-b border-[var(--crimson)] pb-0.5 hover:text-[var(--crimson)] transition-colors">hello@ayush.dev</a>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-7">
@@ -167,23 +231,23 @@ export function ContactGatewaySection() {
                   {/* Phone with country code selector */}
                   <div className="contact-field">
                     <label htmlFor="c-phone">Phone</label>
-                    <div className="flex items-center border-b border-[var(--border-subtle)] focus-within:border-[var(--accent)] transition-colors">
-                      <div className="relative flex items-center pr-2 border-r border-[var(--border-subtle)] mr-3">
+                    <div className="flex items-center border-b border-white/15 focus-within:border-[var(--crimson)] transition-colors">
+                      <div className="relative flex items-center pr-2 border-r border-white/15 mr-3">
                         <select
                           value={formData.countryCode}
                           onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                          className="bg-transparent text-[var(--text-primary)] text-sm pr-5 py-3 outline-none cursor-pointer border-none appearance-none font-mono"
+                          className="bg-transparent text-[var(--ivory)] text-sm pr-5 py-3 outline-none cursor-pointer border-none appearance-none font-mono"
                           style={{ width: "auto", minWidth: "75px" }}
                           aria-label="Country Calling Code"
                         >
                           {COUNTRY_CODES.map((cc) => (
-                            <option key={`${cc.country}-${cc.code}`} value={cc.code} className="bg-[var(--bg-surface)] text-[var(--text-primary)]">
+                            <option key={`${cc.country}-${cc.code}`} value={cc.code} className="bg-[#12141c] text-[var(--ivory)]">
                               {cc.country} {cc.code}
                             </option>
                           ))}
                         </select>
                         <svg
-                          className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-muted)]"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)]"
                           width="12"
                           height="12"
                           viewBox="0 0 24 24"
@@ -200,7 +264,7 @@ export function ContactGatewaySection() {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="Phone number"
-                        className="flex-1 bg-transparent text-[var(--text-primary)] text-sm py-3 outline-none border-none"
+                        className="flex-1 bg-transparent text-[var(--ivory)] text-sm py-3 outline-none border-none placeholder-[var(--text-muted)]"
                         style={{ borderBottom: "none" }}
                       />
                     </div>
@@ -210,9 +274,9 @@ export function ContactGatewaySection() {
                     <label htmlFor="c-reason">Reason</label>
                     <div className="relative">
                       <select id="c-reason" value={formData.reason} onChange={(e) => setFormData({ ...formData, reason: e.target.value })}>
-                        {REASON_OPTIONS.map((opt) => (<option key={opt} value={opt}>{opt}</option>))}
+                        {REASON_OPTIONS.map((opt) => (<option key={opt} value={opt} className="bg-[#12141c] text-[var(--ivory)]">{opt}</option>))}
                       </select>
-                      <svg className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-muted)]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+                      <svg className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
                     </div>
                   </div>
 
@@ -224,11 +288,11 @@ export function ContactGatewaySection() {
                   {/* Bottom row: Submit + Social icons */}
                   <div className="flex flex-col sm:flex-row sm:items-end justify-between pt-4 gap-6">
                     <div>
-                      <button type="submit" disabled={loading} className="inline-flex items-center gap-2.5 px-7 py-3 rounded-full bg-[#0e1014] text-white hover:bg-[var(--accent)] hover:text-[#0e1014] text-sm font-semibold tracking-wide transition-colors disabled:opacity-50 cursor-pointer">
+                      <button type="submit" disabled={loading} className="inline-flex items-center gap-2.5 px-7 py-3 rounded-full bg-[var(--crimson)] text-[var(--ivory)] hover:bg-[var(--crimson-bright)] text-sm font-semibold tracking-wide transition-all shadow-[0_4px_16px_rgba(169,24,35,0.4)] disabled:opacity-50 cursor-pointer">
                         <span>{loading ? "Sending..." : "Send Details"}</span>
                         {!loading && (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>)}
                       </button>
-                      <p className="text-[0.65rem] text-[var(--text-muted)] mt-3">No spam. A real reply, usually the same day.</p>
+                      <p className="text-[0.65rem] text-[var(--text-secondary)] mt-3">No spam. A real reply, usually the same day.</p>
                     </div>
 
                     {/* Social icons at bottom-right */}
@@ -238,7 +302,7 @@ export function ContactGatewaySection() {
                         href="https://x.com/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[#ffffff] shadow-sm flex items-center justify-center text-[var(--text-muted)] hover:text-[#0e1014] hover:border-[var(--accent)] hover:bg-[var(--accent)]/15 transition-all cursor-pointer"
+                        className="w-9 h-9 rounded-full border border-white/10 bg-[#13151d] shadow-sm flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:border-[var(--crimson)] hover:bg-[var(--crimson)]/20 transition-all cursor-pointer"
                         aria-label="Twitter / X"
                         title="Twitter / X"
                       >
@@ -249,7 +313,7 @@ export function ContactGatewaySection() {
                         href="https://instagram.com/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[#ffffff] shadow-sm flex items-center justify-center text-[var(--text-muted)] hover:text-[#0e1014] hover:border-[var(--accent)] hover:bg-[var(--accent)]/15 transition-all cursor-pointer"
+                        className="w-9 h-9 rounded-full border border-white/10 bg-[#13151d] shadow-sm flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:border-[var(--crimson)] hover:bg-[var(--crimson)]/20 transition-all cursor-pointer"
                         aria-label="Instagram"
                         title="Instagram"
                       >
@@ -260,7 +324,7 @@ export function ContactGatewaySection() {
                         href="https://github.com/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[#ffffff] shadow-sm flex items-center justify-center text-[var(--text-muted)] hover:text-[#0e1014] hover:border-[var(--accent)] hover:bg-[var(--accent)]/15 transition-all cursor-pointer"
+                        className="w-9 h-9 rounded-full border border-white/10 bg-[#13151d] shadow-sm flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:border-[var(--crimson)] hover:bg-[var(--crimson)]/20 transition-all cursor-pointer"
                         aria-label="GitHub"
                         title="GitHub"
                       >
@@ -271,7 +335,7 @@ export function ContactGatewaySection() {
                         href="https://linkedin.com/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[#ffffff] shadow-sm flex items-center justify-center text-[var(--text-muted)] hover:text-[#0e1014] hover:border-[var(--accent)] hover:bg-[var(--accent)]/15 transition-all cursor-pointer"
+                        className="w-9 h-9 rounded-full border border-white/10 bg-[#13151d] shadow-sm flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:border-[var(--crimson)] hover:bg-[var(--crimson)]/20 transition-all cursor-pointer"
                         aria-label="LinkedIn"
                         title="LinkedIn"
                       >
