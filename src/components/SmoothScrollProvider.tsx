@@ -18,16 +18,20 @@ export function SmoothScrollProvider({
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
+    // A short lerp settles quickly once the wheel stops; a long duration made
+    // the page keep gliding on its own after the user had finished scrolling
     const lenis = new Lenis({
-      duration: prefersReducedMotion ? 0.01 : 1.15,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 1.2,
+      lerp: prefersReducedMotion ? 1 : 0.12,
+      wheelMultiplier: 1,
+      touchMultiplier: 1,
       infinite: false,
-      smoothWheel: true,
+      smoothWheel: !prefersReducedMotion,
       syncTouch: false,
     });
 
     setLenis(lenis);
+    // Held still until the preloader lifts (Preloader mounts before this runs)
+    if (document.documentElement.dataset.intro !== "done") lenis.stop();
 
     // Connect Lenis scroll to ScrollTrigger
     lenis.on("scroll", ScrollTrigger.update);

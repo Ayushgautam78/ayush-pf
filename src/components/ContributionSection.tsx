@@ -137,14 +137,14 @@ export function ContributionSection() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(90deg, rgba(6,8,15,0.9) 0%, rgba(6,8,15,0.6) 55%, rgba(16,26,60,0.3) 100%), linear-gradient(180deg, var(--bg-primary) 0%, transparent 18%, transparent 82%, var(--bg-primary) 100%)",
+            "linear-gradient(90deg, rgba(8,8,9,0.9) 0%, rgba(8,8,9,0.6) 55%, rgba(8,8,9,0.35) 100%), linear-gradient(180deg, var(--bg-primary) 0%, transparent 18%, transparent 82%, var(--bg-primary) 100%)",
         }}
         aria-hidden="true"
       />
 
       <div className="relative w-full max-w-7xl mx-auto px-[var(--content-padding)]">
-        <p className="text-micro text-[var(--gold)] mb-3">Ecosystem Collaborations</p>
-        <h2 className="text-section text-[var(--ivory)] mb-6 sm:mb-10">Contributions</h2>
+        <p className="text-micro section-index mb-3"><span>Α</span><span className="text-[var(--red)]">Ecosystem Collaborations</span></p>
+        <h2 data-reveal="lines" className="text-section text-[var(--bone)] mb-6 sm:mb-10">Contributions</h2>
 
         <div className="border-t border-[var(--border-medium)]">
           {CONTRIBUTIONS.map((project, index) => {
@@ -155,12 +155,17 @@ export function ContributionSection() {
                   type="button"
                   onClick={() => setOpenId(project.id)}
                   aria-expanded={isOpen}
-                  className="group w-full flex items-center gap-3 sm:gap-6 py-3.5 sm:py-5 text-left cursor-pointer"
+                  className="group relative w-full flex items-center gap-3 sm:gap-6 py-3.5 sm:py-5 text-left cursor-pointer"
                 >
-                  <span className="text-micro text-[var(--gold)] w-6 flex-shrink-0">0{index + 1}</span>
                   <span
-                    className={`font-[family-name:var(--font-display)] text-[1.7rem] sm:text-4xl md:text-5xl leading-none transition-colors duration-300 ${
-                      isOpen ? "text-[var(--gold-bright)]" : "text-[var(--ivory)] group-hover:text-[var(--gold-bright)]"
+                    className="absolute inset-x-0 bottom-0 h-px bg-[var(--red)] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700"
+                    style={{ transitionTimingFunction: "var(--ease-out-expo)" }}
+                    aria-hidden="true"
+                  />
+                  <span className="text-micro text-[var(--red)] w-6 flex-shrink-0">0{index + 1}</span>
+                  <span
+                    className={`font-[family-name:var(--font-display)] font-semibold text-[1.8rem] sm:text-5xl md:text-6xl leading-none tracking-[-0.04em] transition-[color,transform] duration-500 group-hover:translate-x-3 ${
+                      isOpen ? "text-[var(--red-bright)]" : "text-[var(--bone)] group-hover:text-[var(--red-bright)]"
                     }`}
                   >
                     {project.name}
@@ -169,7 +174,7 @@ export function ContributionSection() {
                     {project.category}
                   </span>
                   <span
-                    className={`ml-auto sm:ml-4 text-xl leading-none text-[var(--gold)] transition-transform duration-500 ${isOpen ? "rotate-45" : ""}`}
+                    className={`ml-auto sm:ml-4 text-xl leading-none text-[var(--red)] transition-transform duration-500 ${isOpen ? "rotate-45" : ""}`}
                     aria-hidden="true"
                   >
                     +
@@ -189,14 +194,14 @@ export function ContributionSection() {
                         <Image src={project.logoSrc} alt="" fill sizes="96px" className="object-contain object-left" />
                       </div>
                       <div className="max-w-2xl">
-                        <p className="text-sm font-semibold text-[var(--ivory)] mb-1">{project.roleHint}</p>
-                        <p className="text-sm leading-relaxed text-[var(--ivory-dim)]">{project.descriptionHint}</p>
+                        <p className="text-sm font-semibold text-[var(--bone)] mb-1">{project.roleHint}</p>
+                        <p className="text-sm leading-relaxed text-[var(--bone-dim)]">{project.descriptionHint}</p>
                       </div>
                       <a
                         href={project.officialUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="md:ml-auto flex-shrink-0 text-micro text-[var(--gold)] hover:text-[var(--gold-bright)] transition-colors"
+                        className="md:ml-auto flex-shrink-0 text-micro text-[var(--red)] hover:text-[var(--red-bright)] transition-colors"
                       >
                         <span className="link-underline">Official Project</span> ↗
                       </a>

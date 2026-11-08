@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useHorizontalTrack } from "./useHorizontalTrack";
+import { Tilt } from "./Tilt";
 
 interface JourneyStage {
   numeral: string;
@@ -66,40 +67,15 @@ export function JourneySection() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
+  const railFillRef = useRef<HTMLDivElement>(null);
 
   const onProgress = useCallback((progress: number) => {
+    if (railFillRef.current) railFillRef.current.style.transform = `scaleX(${progress})`;
     setActiveIndex(Math.round(progress * LAST_STAGE));
   }, []);
 
   const jump = useHorizontalTrack(wrapperRef, trackRef, onProgress);
   const jumpToStage = (idx: number) => jump(idx / LAST_STAGE);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length > 0) {
-      touchStartX.current = e.touches[0].clientX;
-      touchStartY.current = e.touches[0].clientY;
-    }
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null || touchStartY.current === null) return;
-    if (e.changedTouches.length === 0) return;
-    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
-    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
-
-    // Trigger only if horizontal swipe gesture dominates
-    if (Math.abs(deltaX) > 35 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1) {
-      if (deltaX < 0) {
-        jumpToStage(Math.min(LAST_STAGE, activeIndex + 1));
-      } else {
-        jumpToStage(Math.max(0, activeIndex - 1));
-      }
-    }
-    touchStartX.current = null;
-    touchStartY.current = null;
-  };
 
   return (
     <div
@@ -113,20 +89,20 @@ export function JourneySection() {
         className="sticky top-0 h-[100svh] overflow-hidden flex flex-col justify-center"
         style={{
           background:
-            "radial-gradient(ellipse 80% 55% at 50% 100%, #131c3a 0%, transparent 72%)",
+            "radial-gradient(ellipse 80% 55% at 50% 100%, #1f1110 0%, transparent 72%)",
         }}
       >
         <div className="px-[var(--content-padding)] mb-4 sm:mb-8 flex items-end justify-between gap-4">
           <div>
-            <p className="text-micro text-[var(--gold)] mb-1.5 sm:mb-2">Chronicles &amp; Milestones</p>
-            <h2 className="text-section text-[var(--ivory)]">The Path</h2>
+            <p className="text-micro section-index mb-2 sm:mb-3"><span>Δ</span><span className="text-[var(--red)]">Chronicles &amp; Milestones</span></p>
+            <h2 data-reveal="lines" className="text-section text-[var(--bone)]">The Path</h2>
           </div>
           <span className="text-micro text-[var(--text-secondary)] whitespace-nowrap">
             0{activeIndex + 1} / 0{JOURNEY_STAGES.length}
           </span>
         </div>
 
-        <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <div>
           <div
             ref={trackRef}
             className="flex items-stretch gap-8 sm:gap-14 px-[var(--content-padding)] w-max will-change-transform"
@@ -134,30 +110,30 @@ export function JourneySection() {
             {JOURNEY_STAGES.map((stage, idx) => {
               const isActive = idx === activeIndex;
               return (
-                <button
+                <article
                   key={stage.indexStr}
-                  type="button"
-                  onClick={() => jumpToStage(idx)}
-                  className={`relative flex-shrink-0 w-[82vw] sm:w-[480px] lg:w-[560px] text-left cursor-pointer transition-opacity duration-500 ${
-                    isActive ? "opacity-100" : "opacity-30 hover:opacity-60"
+                  className={`relative flex-shrink-0 w-[82vw] sm:w-[480px] lg:w-[560px] transition-opacity duration-500 ${
+                    isActive ? "opacity-100" : "opacity-30"
                   }`}
                 >
-                  <div className="flex items-baseline gap-4 mb-2 sm:mb-3">
-                    <span className="font-[family-name:var(--font-display)] text-5xl sm:text-7xl leading-none text-[var(--gold)]">
-                      {stage.numeral}
-                    </span>
-                    <span className="text-micro text-[var(--text-secondary)]">{stage.period}</span>
-                  </div>
-                  <h3 className="font-[family-name:var(--font-display)] text-[1.7rem] sm:text-4xl leading-tight text-[var(--ivory)] mb-2 sm:mb-3">
-                    {stage.title}
-                  </h3>
-                  <p className="text-[0.86rem] sm:text-base leading-relaxed text-[var(--ivory-dim)] mb-3">
-                    {stage.description}
-                  </p>
-                  <p className="text-[0.64rem] sm:text-[0.68rem] font-mono tracking-wider uppercase text-[var(--text-secondary)]">
-                    {stage.milestones.join(" · ")}
-                  </p>
-                </button>
+                  <Tilt max={4}>
+                    <div className="flex items-baseline gap-4 mb-2 sm:mb-3">
+                      <span className="font-greek italic text-5xl sm:text-7xl leading-none text-[var(--red)]">
+                        {stage.numeral}
+                      </span>
+                      <span className="text-micro text-[var(--text-secondary)]">{stage.period}</span>
+                    </div>
+                    <h3 className="font-[family-name:var(--font-display)] font-semibold tracking-[-0.03em] text-[1.7rem] sm:text-4xl leading-tight text-[var(--bone)] mb-2 sm:mb-3">
+                      {stage.title}
+                    </h3>
+                    <p className="text-[0.86rem] sm:text-base leading-relaxed text-[var(--bone-dim)] mb-3">
+                      {stage.description}
+                    </p>
+                    <p className="text-[0.64rem] sm:text-[0.68rem] font-mono tracking-wider uppercase text-[var(--text-secondary)]">
+                      {stage.milestones.join(" · ")}
+                    </p>
+                  </Tilt>
+                </article>
               );
             })}
           </div>
@@ -168,6 +144,7 @@ export function JourneySection() {
           <div className="relative h-[clamp(44px,6.5vw,92px)]">
             <div id="journey-rail" className="absolute inset-x-0 top-0 bottom-0">
               <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--border-medium)]" />
+              <div ref={railFillRef} className="absolute inset-x-0 top-1/2 h-px bg-[var(--red)] origin-left" style={{ transform: "scaleX(0)" }} />
             </div>
           </div>
           <div className="relative h-7">
@@ -177,8 +154,8 @@ export function JourneySection() {
                 type="button"
                 onClick={() => jumpToStage(i)}
                 aria-label={`Jump to phase ${s.numeral}`}
-                className={`absolute top-0 -translate-x-1/2 px-2 py-1 font-[family-name:var(--font-display)] text-base cursor-pointer transition-colors duration-300 ${
-                  i <= activeIndex ? "text-[var(--gold-bright)]" : "text-[var(--text-muted)] hover:text-[var(--ivory)]"
+                className={`absolute top-0 -translate-x-1/2 px-2 py-1 font-greek italic text-lg cursor-pointer transition-colors duration-300 ${
+                  i <= activeIndex ? "text-[var(--red-bright)]" : "text-[var(--text-muted)] hover:text-[var(--bone)]"
                 }`}
                 style={{ left: `${(i / LAST_STAGE) * 100}%` }}
               >

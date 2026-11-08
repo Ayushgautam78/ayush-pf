@@ -33,15 +33,18 @@ export const INTRO = {
   splitEnd: 0.97,
 };
 
-/** Beats of the contact doors, as progress through #contact. */
+/** Beats of the contact gate, as progress through #contact. */
 export const DOORS = {
-  impact: 0.2,
-  withdrawStart: 0.3,
-  withdrawEnd: 0.5,
-  openStart: 0.3,
-  openEnd: 0.62,
-  formStart: 0.44,
-  formEnd: 0.66,
+  impact: 0.18,
+  withdrawStart: 0.24,
+  withdrawEnd: 0.38,
+  openStart: 0.26,
+  openEnd: 0.56,
+  /** Walking through the doorway: the temple front grows past the camera */
+  passStart: 0.52,
+  passEnd: 0.74,
+  formStart: 0.64,
+  formEnd: 0.8,
   /** Where nav links land: doors fully open, form usable. */
-  rest: 0.8,
+  rest: 0.88,
 };

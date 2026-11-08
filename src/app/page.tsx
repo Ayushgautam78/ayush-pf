@@ -7,11 +7,13 @@ import { AboutSection } from "@/components/AboutSection";
 import { JourneySection } from "@/components/JourneySection";
 import { ContactGatewaySection } from "@/components/ContactGatewaySection";
 import { Footer } from "@/components/Footer";
+import { Reveals } from "@/components/Reveals";
 
 export default function Home() {
   return (
     <main className="relative">
       <Navigation />
+      <Reveals />
       
       {/* 3D Interactive Hermes Head in Hero */}
       <HeroSection />

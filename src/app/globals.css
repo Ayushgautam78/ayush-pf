@@ -2,68 +2,49 @@
 
 /* ===== DESIGN TOKENS ===== */
 :root {
-  /* Aegean night: the navy of the scabbard, taken down to near-black */
-  --bg-primary: #06080f;
-  --bg-surface: #0a0e1a;
-  --bg-elevated: #111830;
-  --border-subtle: rgba(226, 232, 255, 0.09);
-  --border-medium: rgba(226, 232, 255, 0.18);
+  /* Black-figure pottery: ink, bone, and one red */
+  --bg-primary: #080809;
+  --bg-surface: #0f0f10;
+  --bg-elevated: #161617;
+  --border-subtle: rgba(242, 238, 230, 0.08);
+  --border-medium: rgba(242, 238, 230, 0.16);
 
-  /* Ichor: the gold of the hilt */
-  --gold: #e3b25c;
-  --gold-bright: #f6d58a;
-  --gold-dark: #8c6a2c;
-  --gold-tint: rgba(227, 178, 92, 0.12);
-  --gold-border: rgba(227, 178, 92, 0.42);
+  --red: #d62a1f;
+  --red-bright: #ff4133;
+  --red-deep: #7a130d;
+  --red-tint: rgba(214, 42, 31, 0.12);
+  --red-border: rgba(214, 42, 31, 0.55);
 
-  /* Marble */
-  --ivory: #f2efe6;
-  --ivory-dim: #cfd0d6;
-  --text-primary: var(--ivory);
-  --text-secondary: #a3a9bc;
-  --text-muted: #7d8499;
-  --text-faint: rgba(242, 239, 230, 0.22);
+  --bone: #f2eee6;
+  --bone-dim: #c9c5bd;
+  --text-primary: var(--bone);
+  --text-secondary: #a19d96;
+  --text-muted: #7a7670;
+  --text-faint: rgba(242, 238, 230, 0.22);
 
   /* Legacy aliases, still used by components outside the current page */
-  --crimson: var(--gold);
-  --crimson-bright: var(--gold-bright);
-  --crimson-dark: var(--gold-dark);
-  --crimson-tint: var(--gold-tint);
-  --crimson-border: var(--gold-border);
-  --accent: var(--gold);
-  --accent-crimson: var(--gold);
-  --accent-dim: rgba(227, 178, 92, 0.6);
-  --accent-subtle: var(--gold-tint);
-  --warm-ivory: var(--ivory);
-  --off-white: var(--ivory);
-  --off-white-dim: var(--ivory-dim);
-  --off-white-faint: rgba(242, 239, 230, 0.15);
-  --off-white-ghost: rgba(242, 239, 230, 0.04);
-  --charcoal: #111830;
-  --charcoal-surface: #151d38;
-  --charcoal-border: #2a3454;
+  --ivory: var(--bone);
+  --ivory-dim: var(--bone-dim);
+  --gold: var(--red);
+  --gold-bright: var(--red-bright);
+  --crimson: var(--red);
+  --crimson-bright: var(--red-bright);
+  --crimson-dark: var(--red-deep);
+  --crimson-tint: var(--red-tint);
+  --crimson-border: var(--red-border);
+  --accent: var(--red);
+  --warm-ivory: var(--bone);
+  --off-white: var(--bone);
+  --charcoal: var(--bg-elevated);
+  --charcoal-border: #2a2a2b;
   --weathered-stone: var(--text-secondary);
-  --cold-blue-gray: var(--text-muted);
-  --muted-marble: var(--text-secondary);
-  --navy-deepest: var(--bg-primary);
-  --navy-deep: var(--bg-surface);
-  --navy: var(--charcoal);
-  --navy-light: var(--text-muted);
-  --slate-blue: var(--charcoal-border);
-  --muted-bronze: var(--gold);
-  --metallic-highlight: var(--gold-bright);
+  --muted-bronze: var(--red);
+  --metallic-highlight: var(--red-bright);
   --bg-storm-deep: var(--bg-surface);
-  --barca-blue: var(--charcoal-border);
-  --barca-blue-bright: var(--gold-tint);
-  --crimson-deep: var(--gold-dark);
-  --warm-red: var(--gold);
-  --gold-muted: var(--gold);
-  --gold-subtle: var(--gold-tint);
-  --antique-gold: var(--gold);
+  --slate-blue: var(--charcoal-border);
   --font-primary: var(--font-body);
 
   /* Typography scale */
-  --fs-hero: clamp(4rem, 14vw, 14rem);
   --fs-section: clamp(2.6rem, 6.4vw, 6.5rem);
   --fs-heading: clamp(1.8rem, 4.5vw, 4.5rem);
   --fs-subheading: clamp(1.2rem, 2.2vw, 2.2rem);
@@ -72,7 +53,6 @@
   --fs-micro: clamp(0.64rem, 0.72vw, 0.74rem);
 
   /* Spacing */
-  --section-padding: clamp(4rem, 10vh, 10rem);
   --content-padding: clamp(1.25rem, 5vw, 6rem);
 
   /* Easing */
@@ -81,29 +61,17 @@
   --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
 
   /* Greek key, drawn once and tiled */
-  --meander-h: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23e3b25c' stroke-width='1.4'%3E%3Cpath d='M0 21h24M21 21V3H5v12h10V9h-5'/%3E%3C/svg%3E");
-  --meander-v: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23e3b25c' stroke-width='1.4'%3E%3Cpath d='M21 0v24M21 21H3V5h12v10H9v-5'/%3E%3C/svg%3E");
+  --meander-h: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23d62a1f' stroke-width='1.6'%3E%3Cpath d='M0 21h24M21 21V3H5v12h10V9h-5'/%3E%3C/svg%3E");
+  --meander-v: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23d62a1f' stroke-width='1.6'%3E%3Cpath d='M21 0v24M21 21H3V5h12v10H9v-5'/%3E%3C/svg%3E");
 }
 
 @theme inline {
   --color-background: var(--bg-primary);
   --color-foreground: var(--text-primary);
-  --color-gold: var(--gold);
-  --color-navy: var(--charcoal);
-  --color-navy-deep: var(--bg-surface);
-  --color-navy-light: var(--text-muted);
-  --color-barca-blue: var(--charcoal-border);
-  --color-barca-blue-bright: var(--gold-tint);
-  --color-crimson: var(--gold);
-  --color-crimson-deep: var(--gold-dark);
-  --color-burgundy: var(--gold-dark);
-  --color-warm-red: var(--gold);
-  --color-gold-muted: var(--gold);
-  --color-gold-subtle: var(--gold-tint);
-  --color-off-white: var(--ivory);
-  --color-off-white-dim: var(--ivory-dim);
-  --color-off-white-faint: var(--border-subtle);
-  --color-off-white-ghost: rgba(255, 255, 255, 0.03);
+  --color-red: var(--red);
+  --color-bone: var(--bone);
+  --color-crimson: var(--red);
+  --color-off-white: var(--bone);
   --font-sans: var(--font-body);
   --font-mono: var(--font-code);
 }
@@ -114,6 +82,8 @@
 }
 
 html {
+  /* Sticky stages change height on resize; anchoring would nudge the page */
+  overflow-anchor: none;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
@@ -135,14 +105,22 @@ body {
 }
 
 ::selection {
-  background-color: var(--gold);
-  color: var(--bg-primary);
+  background-color: var(--red);
+  color: var(--bone);
 }
 
 :focus-visible {
-  outline: 2px solid var(--gold-bright);
+  outline: 2px solid var(--red-bright);
   outline-offset: 3px;
 }
+
+/* The custom cursor replaces the system one, except where you type */
+html.has-cursor,
+html.has-cursor a,
+html.has-cursor button,
+html.has-cursor [role="button"] { cursor: none; }
+html.has-cursor input,
+html.has-cursor textarea { cursor: text; }
 
 /* ===== GRAIN ===== */
 .grain-overlay {
@@ -150,7 +128,7 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.05;
+  opacity: 0.06;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
@@ -164,27 +142,26 @@ body {
 }
 
 /* ===== TYPOGRAPHY ===== */
-.text-hero {
-  font-family: var(--font-display), serif;
-  font-size: var(--fs-hero);
-  line-height: 0.9;
-  font-weight: 400;
+.text-section {
+  font-family: var(--font-display), sans-serif;
+  font-size: var(--fs-section);
+  line-height: 0.95;
+  font-weight: 700;
+  letter-spacing: -0.035em;
   text-transform: uppercase;
 }
 
-.text-section {
-  font-family: var(--font-display), serif;
-  font-size: var(--fs-section);
-  line-height: 0.98;
-  font-weight: 400;
-  text-transform: uppercase;
+/* Classical accent: inscriptions, numerals, the odd italic word */
+.font-greek {
+  font-family: var(--font-greek), serif;
+  font-weight: 300;
 }
 
 .text-heading {
   font-family: var(--font-display), serif;
   font-size: var(--fs-heading);
   line-height: 1.05;
-  font-weight: 400;
+  font-weight: 300;
 }
 
 .text-subheading {
@@ -219,9 +196,26 @@ body {
 
 .text-outline {
   color: transparent;
-  -webkit-text-stroke: 1px rgba(227, 178, 92, 0.75);
+  -webkit-text-stroke: 1px rgba(242, 238, 230, 0.55);
   paint-order: stroke fill;
 }
+
+/* Section index: a Greek letter, then the label */
+.section-index {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+.section-index > span:first-child {
+  font-family: var(--font-greek), serif;
+  font-style: italic;
+  font-size: 1.35em;
+  letter-spacing: 0;
+  color: var(--red);
+}
+
+/* SplitText line masks */
+.reveal-line { padding-bottom: 0.08em; margin-bottom: -0.08em; }
 
 /* ===== MOTIFS ===== */
 .meander {
@@ -229,7 +223,7 @@ body {
   background-image: var(--meander-h);
   background-repeat: repeat-x;
   background-size: 12px 12px;
-  opacity: 0.55;
+  opacity: 0.8;
 }
 
 .meander-v {
@@ -237,43 +231,51 @@ body {
   background-image: var(--meander-v);
   background-repeat: repeat-y;
   background-size: 12px 12px;
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
-.btn-gold {
+/* Fluting, like a column shaft */
+.fluting {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(242, 238, 230, 0.07) 0 1px,
+    transparent 1px 14px
+  );
+}
+
+.btn-red {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  background: var(--gold);
-  color: var(--bg-primary);
+  background: var(--red);
+  color: var(--bone);
   font-family: var(--font-code), monospace;
   font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  transition: background-color 0.3s ease, transform 0.3s var(--ease-out-expo);
+  transition: background-color 0.3s ease;
   cursor: pointer;
 }
-.btn-gold:hover { background: var(--gold-bright); }
-.btn-gold:active { transform: scale(0.98); }
-.btn-gold:disabled { opacity: 0.5; cursor: default; }
+.btn-red:hover { background: var(--red-bright); }
+.btn-red:disabled { opacity: 0.5; cursor: default; }
 
 .btn-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--gold-border);
-  color: var(--ivory);
+  border: 1px solid var(--border-medium);
+  color: var(--bone);
   font-family: var(--font-code), monospace;
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
   cursor: pointer;
 }
-.btn-ghost:hover { background: var(--gold); color: var(--bg-primary); }
+.btn-ghost:hover { background: var(--red); border-color: var(--red); }
 
 .link-underline { position: relative; display: inline-block; }
 .link-underline::after {
@@ -290,7 +292,21 @@ body {
 }
 .link-underline:hover::after { transform: scaleX(1); transform-origin: left; }
 
-/* Rotating inscription behind the hero bust */
+/* Glare that follows the pointer across tilted cards */
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(
+    circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.22) 0%,
+    transparent 55%
+  );
+  mix-blend-mode: soft-light;
+}
+
 @keyframes ring-spin {
   to { transform: rotate(360deg); }
 }
@@ -316,14 +332,14 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--gold);
+  background: var(--red);
   animation: cue-run 2.4s var(--ease-in-out) infinite;
 }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
-::-webkit-scrollbar-thumb { background: #232c49; border-radius: 6px; }
-::-webkit-scrollbar-thumb:hover { background: var(--gold-dark); }
+::-webkit-scrollbar-thumb { background: #2a2a2b; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--red); }
 
 /* ===== CONTINUOUS HORIZONTAL TICKER ===== */
 @keyframes ticker-scroll {
@@ -338,7 +354,6 @@ body {
   backface-visibility: hidden;
 }
 .ticker-track.reverse { animation-direction: reverse; }
-.ticker-row:hover .ticker-track { animation-play-state: paused; }
 
 /* ===== CONTACT FORM ===== */
 .contact-field { position: relative; }
@@ -360,7 +375,7 @@ body {
 .contact-field textarea::placeholder { color: var(--text-muted); }
 .contact-field input:focus,
 .contact-field textarea:focus,
-.contact-field select:focus { border-bottom-color: var(--gold); }
+.contact-field select:focus { border-bottom-color: var(--red); }
 .contact-field label {
   display: block;
   font-family: var(--font-code), monospace;
@@ -372,10 +387,10 @@ body {
   font-weight: 500;
 }
 .contact-field select { appearance: none; cursor: pointer; }
-.contact-field select option { background: #111830; color: #f2efe6; }
+.contact-field select option { background: #161617; color: #f2eee6; }
 
 @media (prefers-reduced-motion: reduce) {
+  /* The skills marquee keeps running: it is slow, linear and part of the content */
   .hero-ring,
-  .ticker-track,
   .scroll-cue::after { animation: none; }
 }

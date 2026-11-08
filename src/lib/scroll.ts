@@ -6,6 +6,11 @@ export const setLenis = (lenis: Lenis | null) => {
   instance = lenis;
 };
 
+export const setScrollLocked = (locked: boolean) => {
+  if (locked) instance?.stop();
+  else instance?.start();
+};
+
 export const scrollToY = (y: number) => {
   if (instance) {
     instance.scrollTo(y, { duration: 1.6 });

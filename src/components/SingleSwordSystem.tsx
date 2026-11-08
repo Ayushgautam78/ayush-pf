@@ -14,10 +14,11 @@ import {
   range,
   stickyProgress,
 } from "@/lib/motion";
+import { SWORD_ASPECT, THROAT, SwordBlade, SwordScabbard } from "./SwordArt";
 
-const SWORD_ASPECT = 209 / 1289;
-/** Where the scabbard's throat sits along the sword, from the pommel. */
-const THROAT = 0.282;
+/** How far each half travels on the draw, as fractions of the sword's length. */
+const SWORD_DRAW = 0.16;
+const SCABBARD_DRAW = 0.66;
 const MAX_SPARKS = 220;
 
 interface Pose {
@@ -62,7 +63,7 @@ export function SingleSwordSystem() {
   const tiltRef = useRef<HTMLDivElement>(null);
   const swordRef = useRef<HTMLDivElement>(null);
   const scabbardRef = useRef<HTMLDivElement>(null);
-  const sheenRef = useRef<HTMLDivElement>(null);
+  const sheenRef = useRef<SVGRectElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -142,7 +143,7 @@ export function SingleSwordSystem() {
         p.x += p.vx * dt;
         p.y += p.vy * dt;
         const t = p.life / p.ttl;
-        ctx.strokeStyle = `rgba(255, ${Math.round(226 - t * 130)}, ${Math.round(150 - t * 130)}, ${1 - t})`;
+        ctx.strokeStyle = `rgba(255, ${Math.round(236 - t * 190)}, ${Math.round(220 - t * 190)}, ${1 - t})`;
         ctx.lineWidth = p.size;
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
@@ -327,7 +328,7 @@ export function SingleSwordSystem() {
       const drawSpeed = curr.draw - lastDraw;
       lastDraw = curr.draw;
       if (drawSpeed > 0.0008 && curr.fall < 0.3) {
-        const throat = worldAlong((THROAT - 0.5) * swordW + 0.56 * swordW * curr.draw);
+        const throat = worldAlong((THROAT - 0.5 + SCABBARD_DRAW * curr.draw) * swordW);
         emit(throat.x, throat.y - 2, Math.ceil(drawSpeed * 260), throat.angle + Math.PI, 1.1, 620);
       }
 
@@ -352,7 +353,7 @@ export function SingleSwordSystem() {
       pointer.sy = damp(pointer.sy, reducedMotion ? 0 : pointer.y, 5, dt);
       tilt.style.transform = `perspective(1400px) rotateX(${-pointer.sy * 22 * curr.idle}deg) rotateY(${pointer.sx * 14 * curr.idle}deg)`;
 
-      sword.style.transform = `translate3d(${-16 * curr.draw * (1 - curr.fall)}%, 0, 0)`;
+      sword.style.transform = `translate3d(${-SWORD_DRAW * 100 * curr.draw * (1 - curr.fall)}%, 0, 0)`;
 
       if (curr.fall >= 0.995) {
         scabbard.style.visibility = "hidden";
@@ -360,13 +361,13 @@ export function SingleSwordSystem() {
         const f = curr.fall;
         scabbard.style.visibility = "visible";
         scabbard.style.opacity = String(1 - range(f, 0.55, 1));
-        scabbard.style.transform = `translate3d(${(56 / 0.718) * curr.draw}%, ${f * f * 420}%, 0) rotate(${f * 26}deg)`;
+        scabbard.style.transform = `translate3d(${SCABBARD_DRAW * 100 * curr.draw}%, ${f * f * 520}%, 0) rotate(${f * 22}deg)`;
       }
 
       // Glint is masked to the sword's silhouette and tied to scroll, so it
       // travels the steel as you move instead of looping on a timer
-      const sweep = reducedMotion ? 2 : ((scrollY / 900) % 1) * 4 - 1;
-      sheen.style.transform = `translate3d(${sweep * 100}%, 0, 0)`;
+      const sweep = reducedMotion ? -400 : ((scrollY / 900) % 1) * 1700 - 400;
+      sheen.setAttribute("transform", `translate(${sweep} 0)`);
 
       glow.style.opacity = String(curr.glow);
       drawSparks(dt);
@@ -396,42 +397,18 @@ export function SingleSwordSystem() {
             style={{
               opacity: 0,
               background:
-                "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(227,178,92,0.26) 0%, rgba(227,178,92,0.08) 42%, transparent 72%)",
+                "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(214,42,31,0.22) 0%, rgba(214,42,31,0.06) 42%, transparent 72%)",
             }}
           />
 
           {/* Unsheathed blade */}
           <div ref={swordRef} className="absolute inset-0 will-change-transform">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/greek-sword.webp" alt="" draggable={false} className="block w-full h-full" />
-            <div
-              className="absolute inset-0 overflow-hidden"
-              style={{
-                WebkitMaskImage: "url(/greek-sword.webp)",
-                maskImage: "url(/greek-sword.webp)",
-                WebkitMaskSize: "100% 100%",
-                maskSize: "100% 100%",
-              }}
-            >
-              <div
-                ref={sheenRef}
-                className="absolute inset-y-0 left-0 w-[34%] will-change-transform"
-                style={{
-                  background:
-                    "linear-gradient(100deg, transparent 0%, rgba(255,246,220,0.95) 50%, transparent 100%)",
-                }}
-              />
-            </div>
+            <SwordBlade sheenRef={sheenRef} />
           </div>
 
           {/* Scabbard */}
-          <div
-            ref={scabbardRef}
-            className="absolute right-0 top-0 bottom-0 w-[71.8%] will-change-transform"
-            style={{ transformOrigin: "30% 50%" }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/greek-scabbard.webp" alt="" draggable={false} className="block w-full h-full" />
+          <div ref={scabbardRef} className="absolute inset-0 will-change-transform" style={{ transformOrigin: "60% 50%" }}>
+            <SwordScabbard />
           </div>
         </div>
       </div>

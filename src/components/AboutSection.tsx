@@ -89,16 +89,16 @@ export function AboutSection() {
 
       {/* Right column stays empty on desktop: the sword hangs there */}
       <div className="px-[var(--content-padding)] lg:pr-[28vw] pb-12 sm:pb-20 md:pb-28">
-        <p className="text-micro text-[var(--gold)] mb-4 sm:mb-8">About</p>
+        <p className="text-micro section-index mb-4 sm:mb-8"><span>Γ</span><span className="text-[var(--red)]">About</span></p>
 
         <h2
           ref={headingRef}
-          className="font-[family-name:var(--font-display)] text-[2.15rem] sm:text-5xl md:text-6xl xl:text-7xl leading-[1.08] text-[var(--ivory)] mb-8 sm:mb-14"
+          className="font-[family-name:var(--font-display)] font-semibold tracking-[-0.04em] text-[2rem] sm:text-5xl md:text-6xl xl:text-7xl leading-[1.04] text-[var(--bone)] mb-8 sm:mb-14"
         >
           {HEADING_WORDS.map((item, i) => (
             <span
               key={i}
-              className={`word inline-block mr-[0.26em] ${item.isAccent ? "text-[var(--gold)]" : ""}`}
+              className={`word inline-block mr-[0.26em] ${item.isAccent ? "font-greek italic text-[var(--red)] tracking-[-0.01em]" : ""}`}
             >
               {item.text}
             </span>
@@ -106,7 +106,7 @@ export function AboutSection() {
         </h2>
 
         <div ref={copyRef} className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 pt-5 border-t border-[var(--border-medium)]">
-          <p className="md:col-span-7 text-base md:text-lg text-[var(--ivory-dim)] leading-relaxed">
+          <p className="md:col-span-7 text-base md:text-lg text-[var(--bone-dim)] leading-relaxed">
             I specialize in bridging artistic visual direction and robust software engineering. Whether building high-performance web applications, interactive motion experiences, or developer toolkits, my focus is always on speed, beauty, and effortless user flow.
           </p>
           <p className="md:col-span-5 text-sm md:text-base text-[var(--text-secondary)] leading-relaxed">
@@ -117,18 +117,18 @@ export function AboutSection() {
 
       {/* Skills: the type is the design, two rows drifting against each other */}
       <div className="border-t border-[var(--border-medium)] pt-4 sm:pt-6 pb-6 sm:pb-10">
-        <p className="text-micro text-[var(--gold)] px-[var(--content-padding)] mb-3 sm:mb-5">My Skills</p>
+        <p className="text-micro text-[var(--red)] px-[var(--content-padding)] mb-3 sm:mb-5">My Skills</p>
 
         <div className="ticker-row overflow-hidden">
           <div className="ticker-track">
             {TICKER_ITEMS.map((tech, index) => (
               <span
                 key={`${tech.name}-${index}`}
-                className="flex items-center gap-4 sm:gap-6 pr-6 sm:pr-10 font-[family-name:var(--font-display)] text-3xl sm:text-5xl lg:text-6xl text-[var(--ivory)] whitespace-nowrap"
+                className="flex items-center gap-4 sm:gap-6 pr-6 sm:pr-10 font-[family-name:var(--font-display)] font-bold tracking-[-0.03em] text-3xl sm:text-5xl lg:text-6xl text-[var(--bone)] whitespace-nowrap"
               >
                 {tech.name}
                 <span className="w-5 h-5 sm:w-7 sm:h-7 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full">
-                  {tech.svg("#e3b25c")}
+                  {tech.svg("#d62a1f")}
                 </span>
               </span>
             ))}
@@ -140,7 +140,7 @@ export function AboutSection() {
             {TICKER_ITEMS.map((tech, index) => (
               <span
                 key={`${tech.name}-${index}`}
-                className="text-outline pr-8 sm:pr-14 font-[family-name:var(--font-display)] text-3xl sm:text-5xl lg:text-6xl whitespace-nowrap"
+                className="text-outline pr-8 sm:pr-14 font-greek italic text-3xl sm:text-5xl lg:text-6xl whitespace-nowrap"
               >
                 {tech.name}
               </span>

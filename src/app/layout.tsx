@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Manrope, Marcellus, JetBrains_Mono } from "next/font/google";
+import { Manrope, Syne, Noto_Serif_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 import { SingleSwordSystem } from "@/components/SingleSwordSystem";
 import { GrainOverlay } from "@/components/GrainOverlay";
+import { Preloader } from "@/components/Preloader";
+import { Cursor } from "@/components/Cursor";
 
 const manrope = Manrope({
   variable: "--font-body",
@@ -11,16 +13,24 @@ const manrope = Manrope({
   display: "swap",
 });
 
-const marcellus = Marcellus({
+// Modern display face for headings; it carries real Greek glyphs too
+const syne = Syne({
   variable: "--font-display",
-  subsets: ["latin"],
-  weight: "400",
+  subsets: ["latin", "greek"],
+  display: "swap",
+});
+
+// Classical serif, used sparingly: inscriptions, numerals and accent words
+const notoSerifDisplay = Noto_Serif_Display({
+  variable: "--font-greek",
+  subsets: ["latin", "greek"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-code",
-  subsets: ["latin"],
+  subsets: ["latin", "greek"],
   weight: ["400", "500", "600"],
   display: "swap",
 });
@@ -51,10 +61,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${marcellus.variable} ${jetbrainsMono.variable} antialiased`}>
+    <html lang="en" className={`${manrope.variable} ${syne.variable} ${notoSerifDisplay.variable} ${jetbrainsMono.variable} antialiased`}>
       <body className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
         <SmoothScrollProvider>
+          <Preloader />
           <SingleSwordSystem />
+          <Cursor />
           <GrainOverlay />
           {children}
         </SmoothScrollProvider>

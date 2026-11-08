@@ -5,28 +5,30 @@ import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HermesCharacter } from "./HermesCharacter";
-import { GoldDust } from "./GoldDust";
+import { DustMotes } from "./DustMotes";
+import { useIntroDone } from "@/lib/intro";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const RING_TEXT =
-  "AYUSH GAUTAM ✦ CREATIVE ENGINEER ✦ STRUCTURE AND INSTINCT ✦ AYUSH GAUTAM ✦ CREATIVE ENGINEER ✦ STRUCTURE AND INSTINCT ✦ ";
+  "AYUSH GAUTAM · ΤΕΧΝΗ · CREATIVE ENGINEER · ΛΟΓΟΣ · STRUCTURE AND INSTINCT · ";
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const nameRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
+  const discRef = useRef<HTMLDivElement>(null);
   const bustRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
+  const ready = useIntroDone();
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-    if (prefersReducedMotion) return;
 
     const ctx = gsap.context(() => {
+      if (prefersReducedMotion) return;
       const scrub = (target: Element | null, vars: gsap.TweenVars, end = "bottom top") =>
         gsap.to(target, {
           ...vars,
@@ -34,21 +36,19 @@ export function HeroSection() {
           scrollTrigger: { trigger: sectionRef.current, start: "top top", end, scrub: true },
         });
 
-      scrub(nameRef.current, { yPercent: -28, opacity: 0.1 });
-      scrub(ringRef.current, { yPercent: -10, scale: 1.25, opacity: 0 });
-      scrub(bustRef.current, { yPercent: 10, scale: 0.94, opacity: 0.2 });
+      scrub(nameRef.current, { yPercent: -30, opacity: 0.1 });
+      scrub(discRef.current, { yPercent: 18, scale: 1.35 });
+      scrub(bustRef.current, { yPercent: 10, scale: 0.94, opacity: 0.25 });
       scrub(metaRef.current, { y: -40, opacity: 0 }, "40% top");
     }, sectionRef);
 
-    // Depth on pointer move: each layer shifts by a different amount
-    const layers = [
-      { el: nameRef.current?.firstElementChild, depth: -12 },
-      { el: ringRef.current?.firstElementChild, depth: 10 },
-      { el: bustRef.current?.firstElementChild, depth: 20 },
-    ].map(({ el, depth }) => ({
-      depth,
-      x: gsap.quickTo(el as Element, "x", { duration: 1.1, ease: "power3" }),
-      y: gsap.quickTo(el as Element, "y", { duration: 1.1, ease: "power3" }),
+    // Depth on pointer move: each layer shifts by a different amount. These
+    // wrappers belong to GSAP alone; the entrance animations run on their
+    // children, so the two never write the same transform.
+    const layers = Array.from(sectionRef.current?.querySelectorAll<HTMLElement>("[data-depth]") ?? []).map((el) => ({
+      depth: Number(el.dataset.depth),
+      x: gsap.quickTo(el, "x", { duration: 1.2, ease: "power3" }),
+      y: gsap.quickTo(el, "y", { duration: 1.2, ease: "power3" }),
     }));
 
     const onMove = (e: PointerEvent) => {
@@ -74,55 +74,61 @@ export function HeroSection() {
       className="relative h-[100svh] min-h-[540px] overflow-hidden"
       aria-label="Ayush Gautam, Creative Engineer"
       style={{
-        background:
-          "radial-gradient(ellipse 62% 58% at 50% 62%, #1b2750 0%, #0d1326 46%, var(--bg-primary) 100%)",
+        background: "radial-gradient(ellipse 70% 60% at 50% 60%, #171313 0%, var(--bg-primary) 70%)",
+        // Width of the bust; the name is placed against its top edge
+        ["--bust" as string]: "min(70svh, 150vw)",
       }}
     >
-      <GoldDust />
+      <DustMotes />
 
-      {/* Inscription ring: a halo behind the head */}
+      {/* The red sun: a hoplite shield behind the head */}
       <div
-        ref={ringRef}
-        className="absolute left-1/2 bottom-[-4svh] -translate-x-1/2 pointer-events-none will-change-transform"
-        style={{ width: "min(84svh, 150vw)", aspectRatio: "1 / 1" }}
+        ref={discRef}
+        className="absolute left-1/2 bottom-[18svh] -translate-x-1/2 pointer-events-none will-change-transform"
+        style={{ width: "min(64svh, 136vw)", aspectRatio: "1 / 1" }}
         aria-hidden="true"
       >
-        <motion.div
-          className="w-full h-full"
-          initial={{ opacity: 0, scale: 0.86 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.8, delay: 0.5, ease: EASE }}
-        >
-          <svg viewBox="0 0 400 400" className="hero-ring w-full h-full">
-            <defs>
-              <path id="hero-ring-path" d="M200 200 m-182 0 a182 182 0 1 1 364 0 a182 182 0 1 1 -364 0" />
-            </defs>
-            <circle cx="200" cy="200" r="194" fill="none" stroke="rgba(227,178,92,0.28)" strokeWidth="0.5" />
-            <circle cx="200" cy="200" r="172" fill="none" stroke="rgba(227,178,92,0.16)" strokeWidth="0.5" />
-            <text fill="rgba(227,178,92,0.72)" fontSize="9.2" letterSpacing="2.15" fontFamily="var(--font-code), monospace">
-              <textPath href="#hero-ring-path">{RING_TEXT}</textPath>
-            </text>
-          </svg>
-        </motion.div>
+        <div data-depth="8" className="w-full h-full">
+          <motion.div
+            className="relative w-full h-full"
+            initial={{ scale: 0.4, opacity: 0 }}
+            animate={ready ? { scale: 1, opacity: 1 } : undefined}
+            transition={{ duration: 1.8, delay: 0.15, ease: EASE }}
+          >
+            <div className="absolute inset-[11%] rounded-full bg-[var(--red)]" />
+            <svg viewBox="0 0 400 400" className="hero-ring absolute inset-0 w-full h-full">
+              <defs>
+                <path id="hero-ring-path" d="M200 200 m-188 0 a188 188 0 1 1 376 0 a188 188 0 1 1 -376 0" />
+              </defs>
+              <circle cx="200" cy="200" r="198" fill="none" stroke="rgba(242,238,230,0.18)" strokeWidth="0.5" />
+              <text fill="rgba(242,238,230,0.7)" fontSize="9" letterSpacing="2.4" fontFamily="var(--font-code), monospace">
+                <textPath href="#hero-ring-path">{RING_TEXT + RING_TEXT}</textPath>
+              </text>
+            </svg>
+          </motion.div>
+        </div>
       </div>
 
-      {/* Name: sits high so the bust only overlaps the bottom edge of the letters */}
+      {/* Name: set against the top of the bust, so the laurel and hair cover the
+          lower part of the letters and the head reads as standing in front */}
       <div
         ref={nameRef}
-        className="absolute inset-x-0 top-[11svh] sm:top-[9svh] flex justify-center will-change-transform select-none"
+        className="absolute inset-x-0 flex justify-center will-change-transform select-none [--lift:0.34em] sm:[--lift:0.46em]"
+        style={{ fontSize: "min(15.5vw, 30svh)", top: "calc(100% - var(--bust) - var(--lift))" }}
       >
         <h1
-          className="flex font-[family-name:var(--font-display)] uppercase text-[var(--ivory)] leading-[0.92]"
-          style={{ fontSize: "min(26.5vw, 50svh)" }}
+          data-depth="-14"
+          className="flex font-[family-name:var(--font-display)] font-extrabold uppercase text-[var(--bone)] leading-[0.86] tracking-[-0.05em]"
+          style={{ fontSize: "inherit" }}
           aria-label="Ayush Gautam"
         >
           {"AYUSH".split("").map((letter, i) => (
-            <span key={i} className="inline-block overflow-hidden" aria-hidden="true">
+            <span key={i} className="inline-block overflow-hidden pb-[0.04em]" aria-hidden="true">
               <motion.span
                 className="inline-block"
-                initial={{ y: "105%" }}
-                animate={{ y: 0 }}
-                transition={{ duration: 1.3, delay: 0.1 + i * 0.07, ease: EASE }}
+                initial={{ y: "110%" }}
+                animate={ready ? { y: 0 } : undefined}
+                transition={{ duration: 1.4, delay: 0.25 + i * 0.07, ease: EASE }}
               >
                 {letter}
               </motion.span>
@@ -131,20 +137,23 @@ export function HeroSection() {
         </h1>
       </div>
 
-      {/* Hermes bust: rests on the bottom edge of the screen */}
+      {/* Hermes bust, in marble: rests on the bottom edge of the screen */}
       <div
         ref={bustRef}
         className="absolute left-1/2 bottom-0 -translate-x-1/2 origin-bottom pointer-events-none will-change-transform"
-        style={{ width: "min(70svh, 128vw)", aspectRatio: "1 / 1" }}
+        style={{ width: "var(--bust)", aspectRatio: "1 / 1" }}
       >
-        <motion.div
-          className="w-full h-full"
-          initial={{ opacity: 0, y: 70 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.5, delay: 0.25, ease: EASE }}
-        >
-          <HermesCharacter />
-        </motion.div>
+        <div data-depth="22" className="w-full h-full">
+          <motion.div
+            className="w-full h-full"
+            style={{ filter: "grayscale(1) contrast(1.12) brightness(1.04)" }}
+            initial={{ opacity: 0, y: 90 }}
+            animate={ready ? { opacity: 1, y: 0 } : undefined}
+            transition={{ duration: 1.6, delay: 0.35, ease: EASE }}
+          >
+            <HermesCharacter />
+          </motion.div>
+        </div>
       </div>
 
       {/* Blend the bust's cut-off base into the next scene */}
@@ -156,12 +165,12 @@ export function HeroSection() {
       <motion.div
         ref={metaRef}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, delay: 1 }}
+        animate={ready ? { opacity: 1 } : undefined}
+        transition={{ duration: 1.2, delay: 1.1 }}
         className="absolute inset-x-0 bottom-5 sm:bottom-9 px-[var(--content-padding)] flex items-end justify-between gap-6"
       >
-        <div className="max-w-[15rem]">
-          <p className="text-micro text-[var(--gold)] mb-2">Creative Engineer</p>
+        <div className="max-w-[16rem]">
+          <p className="text-micro text-[var(--red)] mb-2">Creative Engineer</p>
           <p className="hidden sm:block text-sm leading-relaxed text-[var(--text-secondary)]">
             Somewhere between structure and instinct.
           </p>

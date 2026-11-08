@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { useHorizontalTrack } from "./useHorizontalTrack";
+import { Tilt } from "./Tilt";
 
 export interface ContentStripItem {
   id: string;
@@ -110,16 +111,16 @@ function CardBody({ item, isActive, action }: { item: ContentStripItem; isActive
           />
         </picture>
         <span
-          className={`absolute bottom-0 left-0 h-[3px] bg-[var(--gold)] transition-[width] duration-700 ${isActive ? "w-full" : "w-0"}`}
+          className={`absolute bottom-0 left-0 h-[3px] bg-[var(--red)] transition-[width] duration-700 ${isActive ? "w-full" : "w-0"}`}
           style={{ transitionTimingFunction: "var(--ease-out-expo)" }}
           aria-hidden="true"
         />
       </div>
 
       <div className="flex items-start gap-3 sm:gap-5 pt-3 sm:pt-4">
-        <span className="text-micro text-[var(--gold)] pt-1.5">{item.orderNumber}</span>
+        <span className="text-micro text-[var(--red)] pt-1.5">{item.orderNumber}</span>
         <div className="min-w-0 flex-1">
-          <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-3xl leading-tight text-[var(--ivory)] group-hover:text-[var(--gold-bright)] transition-colors">
+          <h3 className="font-[family-name:var(--font-display)] font-semibold tracking-[-0.03em] text-xl sm:text-2xl md:text-3xl leading-tight text-[var(--bone)] group-hover:text-[var(--red-bright)] transition-colors">
             {item.title}
           </h3>
           <p className="text-[0.82rem] sm:text-sm leading-snug text-[var(--text-secondary)] mt-1">{item.tagline}</p>
@@ -127,7 +128,7 @@ function CardBody({ item, isActive, action }: { item: ContentStripItem; isActive
             {item.category} · {item.techTags.join(" · ")}
           </p>
         </div>
-        <span className="text-micro text-[var(--gold)] whitespace-nowrap pt-1.5">{action}</span>
+        <span className="text-micro text-[var(--red)] whitespace-nowrap pt-1.5">{action}</span>
       </div>
     </>
   );
@@ -162,8 +163,8 @@ export function ContentShowcaseSection() {
         <div className="w-full px-[var(--content-padding)] mb-3 sm:mb-6">
           <div className="flex items-end justify-between gap-4 pb-3">
             <div>
-              <p className="text-micro text-[var(--gold)] mb-1.5 sm:mb-2">Creations Suite</p>
-              <h2 className="font-[family-name:var(--font-display)] uppercase text-[1.6rem] sm:text-4xl md:text-5xl leading-none text-[var(--ivory)]">
+              <p className="text-micro section-index mb-2 sm:mb-3"><span>Β</span><span className="text-[var(--red)]">Creations Suite</span></p>
+              <h2 data-reveal="lines" className="font-[family-name:var(--font-display)] font-bold uppercase tracking-[-0.04em] text-[1.7rem] sm:text-5xl md:text-6xl leading-[0.95] text-[var(--bone)]">
                 Featured Content &amp; Live Apps
               </h2>
             </div>
@@ -172,7 +173,7 @@ export function ContentShowcaseSection() {
             </span>
           </div>
           <div className="h-px bg-[var(--border-medium)]">
-            <div ref={barRef} className="h-full bg-[var(--gold)] origin-left" style={{ transform: "scaleX(0.04)" }} />
+            <div ref={barRef} className="h-full bg-[var(--red)] origin-left" style={{ transform: "scaleX(0.04)" }} />
           </div>
         </div>
 
@@ -188,8 +189,9 @@ export function ContentShowcaseSection() {
                 onClick={() => setBotModalOpen(true)}
                 className={cardClass}
                 aria-label={`Open details for ${item.title}`}
+                data-cursor="Specs"
               >
-                <CardBody item={item} isActive={idx === activeIndex} action="Specs +" />
+                <Tilt><CardBody item={item} isActive={idx === activeIndex} action="Specs +" /></Tilt>
               </button>
             ) : (
               <a
@@ -199,8 +201,9 @@ export function ContentShowcaseSection() {
                 rel="noopener noreferrer"
                 className={cardClass}
                 aria-label={`Launch ${item.title}`}
+                data-cursor="Open"
               >
-                <CardBody item={item} isActive={idx === activeIndex} action="Launch ↗" />
+                <Tilt><CardBody item={item} isActive={idx === activeIndex} action="Launch ↗" /></Tilt>
               </a>
             )
           )}
@@ -217,7 +220,7 @@ export function ContentShowcaseSection() {
             >
               <span
                 className={`block h-[2px] transition-all duration-300 ${
-                  i === activeIndex ? "w-8 bg-[var(--gold)]" : "w-4 bg-[var(--border-medium)]"
+                  i === activeIndex ? "w-8 bg-[var(--red)]" : "w-4 bg-[var(--border-medium)]"
                 }`}
               />
             </button>
@@ -239,31 +242,31 @@ export function ContentShowcaseSection() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-full max-w-xl max-h-[90svh] overflow-y-auto p-6 sm:p-9 border border-[var(--gold-border)] bg-[var(--bg-surface)] text-[var(--ivory)]"
+              className="relative w-full max-w-xl max-h-[90svh] overflow-y-auto p-6 sm:p-9 border border-[var(--red-border)] bg-[var(--bg-surface)] text-[var(--bone)]"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
                 autoFocus
                 onClick={() => setBotModalOpen(false)}
-                className="absolute top-4 right-4 w-9 h-9 text-xl text-[var(--text-secondary)] hover:text-[var(--gold-bright)] transition-colors cursor-pointer"
+                className="absolute top-4 right-4 w-9 h-9 text-xl text-[var(--text-secondary)] hover:text-[var(--red-bright)] transition-colors cursor-pointer"
                 aria-label="Close modal"
               >
                 ×
               </button>
 
-              <p className="text-micro text-[var(--gold)] mb-2 pr-10">Autonomous Ecosystem Infrastructure</p>
-              <h3 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl leading-tight mb-4">
+              <p className="text-micro text-[var(--red)] mb-2 pr-10">Autonomous Ecosystem Infrastructure</p>
+              <h3 className="font-[family-name:var(--font-display)] font-bold tracking-[-0.03em] text-3xl sm:text-4xl leading-tight mb-4">
                 Discord &amp; Telegram Bots
               </h3>
-              <p className="text-sm leading-relaxed text-[var(--ivory-dim)] mb-5">
+              <p className="text-sm leading-relaxed text-[var(--bone-dim)] mb-5">
                 Operating directly inside Discord communities and Telegram channels for 24/7 security, anti-phishing protection, and protocol event telemetry without needing an external web interface.
               </p>
 
               <div className="border-t border-[var(--border-medium)]">
                 {BOT_HIGHLIGHTS.map((highlight, i) => (
                   <div key={highlight.title} className="flex gap-4 py-3.5 border-b border-[var(--border-medium)]">
-                    <span className="text-micro text-[var(--gold)] pt-0.5">0{i + 1}</span>
+                    <span className="text-micro text-[var(--red)] pt-0.5">0{i + 1}</span>
                     <div>
                       <p className="text-sm font-semibold mb-0.5">{highlight.title}</p>
                       <p className="text-[0.82rem] leading-relaxed text-[var(--text-secondary)]">{highlight.body}</p>
@@ -274,7 +277,7 @@ export function ContentShowcaseSection() {
 
               <div className="flex items-center justify-between gap-4 pt-5">
                 <span className="text-[0.68rem] font-mono text-[var(--text-secondary)]">Status: 99.9% Uptime Verified</span>
-                <button type="button" onClick={() => setBotModalOpen(false)} className="btn-gold px-5 py-2.5">
+                <button type="button" onClick={() => setBotModalOpen(false)} className="btn-red px-5 py-2.5">
                   Done
                 </button>
               </div>

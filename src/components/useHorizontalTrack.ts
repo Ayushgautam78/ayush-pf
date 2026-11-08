@@ -30,24 +30,23 @@ export function useHorizontalTrack(
     const track = trackRef.current;
     if (!wrapper || !track) return;
 
-    let lastWidth = 0;
+    // The sticky stage is 100svh, which ignores the mobile address bar
+    const stage = (wrapper.firstElementChild as HTMLElement | null) ?? wrapper;
     let lastHeight = 0;
     let x = 0;
 
     const measure = () => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      // Ignore the mobile URL bar collapsing, or the page jumps mid-scroll
-      if (vw === lastWidth && Math.abs(vh - lastHeight) < 120 && track.scrollWidth - vw === distanceRef.current) return;
-      lastWidth = vw;
-      lastHeight = vh;
-      distanceRef.current = Math.max(0, track.scrollWidth - vw);
-      wrapper.style.height = `${distanceRef.current + vh}px`;
+      const distance = Math.max(0, track.scrollWidth - window.innerWidth);
+      const stageH = stage.offsetHeight;
+      if (distance === distanceRef.current && stageH === lastHeight) return;
+      distanceRef.current = distance;
+      lastHeight = stageH;
+      wrapper.style.height = `${distance + stageH}px`;
       ScrollTrigger.refresh();
     };
 
     const tick = (_time: number, deltaTime: number) => {
-      const viewH = window.innerHeight;
+      const viewH = stage.offsetHeight;
       const rect = wrapper.getBoundingClientRect();
       if (rect.bottom < -viewH || rect.top > viewH * 2) return;
       const progress = stickyProgress(rect, viewH);

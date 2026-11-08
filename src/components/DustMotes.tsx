@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 /** Slow rising motes of light. Only runs while on screen. */
-export function GoldDust({ count = 46 }: { count?: number }) {
+export function DustMotes({ count = 46 }: { count?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export function GoldDust({ count = 46 }: { count?: number }) {
         }
         const x = (m.x + Math.sin(now * 0.00025 + m.drift) * 0.012) * width;
         const twinkle = 0.65 + 0.35 * Math.sin(now * 0.0012 + m.drift * 3);
-        ctx.fillStyle = `rgba(246, 213, 138, ${m.alpha * twinkle})`;
+        ctx.fillStyle = `rgba(242, 238, 230, ${m.alpha * twinkle * 0.8})`;
         ctx.beginPath();
         ctx.arc(x, m.y * height, m.size, 0, Math.PI * 2);
         ctx.fill();

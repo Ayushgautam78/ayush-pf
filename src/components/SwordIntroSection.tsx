@@ -5,14 +5,14 @@ import gsap from "gsap";
 import { INTRO, easeInOutCubic, lerp, range, stickyProgress } from "@/lib/motion";
 
 const PANEL_BACKGROUND =
-  "radial-gradient(ellipse 70% 55% at 50% 58%, #131c3a 0%, #0a0e1c 48%, var(--bg-primary) 100%)";
+  "radial-gradient(ellipse 70% 55% at 50% 58%, #1c1514 0%, #0e0c0c 48%, var(--bg-primary) 100%)";
 
 /**
  * SwordIntroSection
  *
  * The stage for the sword's first scene. The sword itself is rendered by
  * SingleSwordSystem; this owns everything behind it: the word that fills with
- * gold as the blade is drawn, and the two panels that split along the cut to
+ * red as the blade is drawn, and the two panels that split along the cut to
  * reveal the next section, which sits directly underneath (see page.tsx).
  */
 export function SwordIntroSection() {
@@ -96,13 +96,13 @@ export function SwordIntroSection() {
           ref={titleRef}
           className="absolute left-0 right-0 top-[22%] sm:top-[17%] flex flex-col items-center will-change-transform"
         >
-          <p className="text-micro text-[var(--gold)] mb-3 sm:mb-5">The Celestial Blade</p>
-          <h2 className="relative font-[family-name:var(--font-display)] text-[13.4vw] leading-none tracking-[0.005em] uppercase whitespace-nowrap">
+          <p className="text-micro text-[var(--red)] mb-3 sm:mb-5">The Celestial Blade</p>
+          <h2 className="relative font-[family-name:var(--font-display)] font-extrabold text-[8.8vw] leading-none tracking-[-0.05em] uppercase whitespace-nowrap">
             <span className="text-outline">Unsheathe</span>
             <span
               ref={fillRef}
               aria-hidden="true"
-              className="absolute inset-0 text-[var(--gold)]"
+              className="absolute inset-0 text-[var(--red)]"
               style={{ clipPath: "inset(0 100% 0 0)" }}
             >
               Unsheathe
@@ -126,8 +126,8 @@ export function SwordIntroSection() {
           style={{ opacity: 0 }}
           aria-hidden="true"
         >
-          <line x1="100" y1="22" x2="0" y2="78" stroke="rgba(246,213,138,0.35)" strokeWidth="12" vectorEffect="non-scaling-stroke" />
-          <line x1="100" y1="22" x2="0" y2="78" stroke="#fff6dc" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+          <line x1="100" y1="22" x2="0" y2="78" stroke="rgba(214,42,31,0.55)" strokeWidth="10" vectorEffect="non-scaling-stroke" />
+          <line x1="100" y1="22" x2="0" y2="78" stroke="#ffffff" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
         </svg>
 
         <div
@@ -136,7 +136,7 @@ export function SwordIntroSection() {
           style={{
             opacity: 0,
             mixBlendMode: "screen",
-            background: "radial-gradient(ellipse 85% 75% at 50% 50%, rgba(255,246,220,0.6) 0%, rgba(246,213,138,0.22) 40%, rgba(246,213,138,0.06) 70%, transparent 100%)",
+            background: "radial-gradient(ellipse 85% 75% at 50% 50%, rgba(255,255,255,0.55) 0%, rgba(214,42,31,0.25) 40%, rgba(214,42,31,0.06) 70%, transparent 100%)",
           }}
           aria-hidden="true"
         />

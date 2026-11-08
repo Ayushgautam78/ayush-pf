@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { scrollToSection, scrollToY } from "@/lib/scroll";
+import { Magnetic } from "./Tilt";
 
 const NAV_ITEMS = [
   { label: "Work", href: "#work" },
@@ -60,7 +61,7 @@ export function Navigation() {
       <div className="fixed top-0 inset-x-0 h-px z-[60] pointer-events-none" aria-hidden="true">
         <div
           ref={progressRef}
-          className="h-full bg-[var(--gold)] origin-left"
+          className="h-full bg-[var(--red)] origin-left"
           style={{ transform: "scaleX(0)" }}
         />
       </div>
@@ -81,7 +82,7 @@ export function Navigation() {
         >
           <button
             onClick={() => scrollToY(0)}
-            className="font-[family-name:var(--font-display)] text-lg sm:text-xl tracking-[0.06em] text-[var(--ivory)] hover:text-[var(--gold-bright)] transition-colors cursor-pointer"
+            className="font-[family-name:var(--font-display)] font-bold text-lg sm:text-xl tracking-[-0.03em] text-[var(--bone)] hover:text-[var(--red-bright)] transition-colors cursor-pointer"
           >
             Ayush Gautam
           </button>
@@ -92,23 +93,25 @@ export function Navigation() {
               <button
                 key={item.label}
                 onClick={() => scrollTo(item.href)}
-                className="text-micro text-[var(--text-secondary)] hover:text-[var(--ivory)] transition-colors cursor-pointer"
+                className="text-micro text-[var(--text-secondary)] hover:text-[var(--bone)] transition-colors cursor-pointer"
               >
-                <span className="text-[var(--gold)] mr-1.5">0{i + 1}</span>
+                <span className="text-[var(--red)] mr-1.5">0{i + 1}</span>
                 <span className="link-underline">{item.label}</span>
               </button>
             ))}
           </div>
 
           <div className="flex items-center gap-3">
-            <button onClick={() => scrollTo("#contact")} className="btn-ghost px-3 py-1.5 sm:px-4 sm:py-2">
-              Let&apos;s talk
-            </button>
+            <Magnetic>
+              <button onClick={() => scrollTo("#contact")} className="btn-red px-3.5 py-2 sm:px-5 sm:py-2.5">
+                Let&apos;s talk
+              </button>
+            </Magnetic>
 
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden relative w-9 h-9 flex flex-col items-center justify-center gap-1.5 text-[var(--ivory)] cursor-pointer"
+              className="md:hidden relative w-9 h-9 flex flex-col items-center justify-center gap-1.5 text-[var(--bone)] cursor-pointer"
               aria-label={isOpen ? "Close menu" : "Open menu"}
               aria-expanded={isOpen}
             >
@@ -137,9 +140,9 @@ export function Navigation() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.05 + i * 0.06, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex items-baseline gap-4 font-[family-name:var(--font-display)] text-5xl uppercase text-[var(--ivory)] hover:text-[var(--gold)] transition-colors cursor-pointer"
+                  className="flex items-baseline gap-4 font-[family-name:var(--font-display)] font-extrabold tracking-[-0.04em] text-5xl uppercase text-[var(--bone)] hover:text-[var(--red)] transition-colors cursor-pointer"
                 >
-                  <span className="text-micro text-[var(--gold)]">0{i + 1}</span>
+                  <span className="text-micro text-[var(--red)]">0{i + 1}</span>
                   {item.label}
                 </motion.button>
               ))}

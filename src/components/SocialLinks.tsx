@@ -32,7 +32,7 @@ export function SocialLinks({ className = "" }: { className?: string }) {
           rel="noopener noreferrer"
           aria-label={social.label}
           title={social.label}
-          className="w-9 h-9 flex items-center justify-center border border-[var(--border-medium)] text-[var(--text-secondary)] hover:text-[var(--bg-primary)] hover:bg-[var(--gold)] hover:border-[var(--gold)] transition-colors"
+          className="w-9 h-9 flex items-center justify-center border border-[var(--border-medium)] text-[var(--text-secondary)] hover:text-[var(--bg-primary)] hover:bg-[var(--red)] hover:border-[var(--red)] transition-colors"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d={social.path} />
