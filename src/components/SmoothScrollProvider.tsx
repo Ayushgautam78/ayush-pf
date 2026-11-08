@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { setLenis } from "@/lib/scroll";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,8 +13,6 @@ export function SmoothScrollProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const lenisRef = useRef<Lenis | null>(null);
-
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -28,7 +27,7 @@ export function SmoothScrollProvider({
       syncTouch: false,
     });
 
-    lenisRef.current = lenis;
+    setLenis(lenis);
 
     // Connect Lenis scroll to ScrollTrigger
     lenis.on("scroll", ScrollTrigger.update);
@@ -38,9 +37,14 @@ export function SmoothScrollProvider({
     };
 
     gsap.ticker.add(updateTicker);
+    gsap.ticker.lagSmoothing(0);
+
+    // Display type changes section heights once it swaps in
+    document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
     return () => {
       gsap.ticker.remove(updateTicker);
+      setLenis(null);
       lenis.destroy();
     };
   }, []);

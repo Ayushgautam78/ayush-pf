@@ -1,21 +1,27 @@
 import type { Metadata } from "next";
-import { Inter, Cinzel } from "next/font/google";
+import { Manrope, Marcellus, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 import { SingleSwordSystem } from "@/components/SingleSwordSystem";
 import { GrainOverlay } from "@/components/GrainOverlay";
 
-const inter = Inter({
+const manrope = Manrope({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
-const cinzel = Cinzel({
+const marcellus = Marcellus({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: "400",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-code",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
@@ -45,8 +51,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${cinzel.variable} antialiased`}>
-      <body className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-x-hidden">
+    <html lang="en" className={`${manrope.variable} ${marcellus.variable} ${jetbrainsMono.variable} antialiased`}>
+      <body className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
         <SmoothScrollProvider>
           <SingleSwordSystem />
           <GrainOverlay />

@@ -59,16 +59,14 @@ const CONTRIBUTIONS: ContributionProject[] = [
 /**
  * ContributionSection
  *
- * Black section with crisp white text.
- * Background video tone is calibrated to be bright, vibrant, and luminous.
- * The sword is strictly 0% visible in this section.
+ * Revealed from underneath when the sword cuts the intro stage open, so it
+ * must fill the viewport and carries a negative top margin to sit under the
+ * intro's sticky stage. An index of rows: everything readable at once, each
+ * row opening in place for detail.
  */
 export function ContributionSection() {
-  const [selectedProject, setSelectedProject] =
-    useState<ContributionProject | null>(null);
+  const [openId, setOpenId] = useState(CONTRIBUTIONS[0].id);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const posRef = useRef(0);
 
   // Reliable video autoplay across all browsers (Chrome, Brave, Safari, Firefox)
   useEffect(() => {
@@ -115,73 +113,13 @@ export function ContributionSection() {
     };
   }, []);
 
-  // Continuous JS ticker: runs only when in viewport to ensure 60fps on mobile
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    let isPaused = false;
-    let isVisible = false;
-    let animId: number = 0;
-    const speed = 0.85;
-
-    const onEnter = () => { isPaused = true; };
-    const onLeave = () => { isPaused = false; };
-
-    track.addEventListener("mouseenter", onEnter);
-    track.addEventListener("mouseleave", onLeave);
-    track.addEventListener("touchstart", onEnter, { passive: true });
-    track.addEventListener("touchend", onLeave, { passive: true });
-
-    const step = () => {
-      if (!isPaused && isVisible) {
-        posRef.current += speed;
-        const halfWidth = track.scrollWidth / 2;
-        if (halfWidth > 0 && posRef.current >= halfWidth) {
-          posRef.current -= halfWidth;
-        }
-        track.style.transform = `translate3d(-${posRef.current}px, 0, 0)`;
-      }
-      if (isVisible) {
-        animId = requestAnimationFrame(step);
-      }
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting;
-        if (isVisible) {
-          cancelAnimationFrame(animId);
-          animId = requestAnimationFrame(step);
-        } else {
-          cancelAnimationFrame(animId);
-        }
-      },
-      { rootMargin: "150px" }
-    );
-    observer.observe(track);
-
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(animId);
-      track.removeEventListener("mouseenter", onEnter);
-      track.removeEventListener("mouseleave", onLeave);
-      track.removeEventListener("touchstart", onEnter);
-      track.removeEventListener("touchend", onLeave);
-    };
-  }, []);
-
-  // Duplicate items for seamless infinite loop
-  const tickerItems = [...CONTRIBUTIONS, ...CONTRIBUTIONS, ...CONTRIBUTIONS, ...CONTRIBUTIONS];
-
   return (
     <section
       id="contributions"
-      className="relative z-10 w-full py-5 sm:py-12 md:py-20 overflow-hidden bg-[var(--bg-primary)] text-[var(--ivory)]"
+      className="relative z-0 -mt-[100svh] min-h-[100svh] w-full flex flex-col justify-center overflow-hidden bg-[var(--bg-primary)] py-20 sm:py-24"
       aria-label="Projects I Have Contributed To"
     >
-
-      {/* Cinematic Background Video: Editorial Monochrome Grey Aesthetic */}
+      {/* Ruins, toned to the night palette */}
       <video
         ref={videoRef}
         autoPlay
@@ -190,180 +128,86 @@ export function ContributionSection() {
         playsInline
         preload="auto"
         aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          opacity: 0.78,
-          zIndex: 0,
-          pointerEvents: "none",
-          filter: "grayscale(100%) contrast(1.25) brightness(0.92)",
-        }}
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        style={{ filter: "grayscale(1) contrast(1.15) brightness(0.85)" }}
       >
         <source src="/greek-ruins-loop.mp4" type="video/mp4" />
       </video>
-
-      {/* Dotted Halftone / Micro-dot Black Dots Overlay for High Visual Impact */}
       <div
-        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage:
-            "radial-gradient(rgba(0, 0, 0, 0.88) 1.2px, transparent 1.2px)",
-          backgroundSize: "4px 4px",
-          zIndex: 1,
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Soft translucent vignette overlay that frames the video and keeps text crisp */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
           background:
-            "radial-gradient(ellipse at 50% 50%, rgba(9,10,13,0.12) 0%, rgba(9,10,13,0.8) 100%)",
-          zIndex: 2,
-          pointerEvents: "none",
+            "linear-gradient(90deg, rgba(6,8,15,0.9) 0%, rgba(6,8,15,0.6) 55%, rgba(16,26,60,0.3) 100%), linear-gradient(180deg, var(--bg-primary) 0%, transparent 18%, transparent 82%, var(--bg-primary) 100%)",
         }}
+        aria-hidden="true"
       />
 
-      {/* Subtle top/bottom borders on black */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-white/10" style={{ zIndex: 3 }} />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-white/10" style={{ zIndex: 3 }} />
+      <div className="relative w-full max-w-7xl mx-auto px-[var(--content-padding)]">
+        <p className="text-micro text-[var(--gold)] mb-3">Ecosystem Collaborations</p>
+        <h2 className="text-section text-[var(--ivory)] mb-6 sm:mb-10">Contributions</h2>
 
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="px-[var(--content-padding)] mb-3 sm:mb-6 md:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-2.5 sm:gap-4">
-          <div>
-            <p className="text-micro text-[var(--crimson)] tracking-[0.25em] uppercase mb-2 font-semibold">
-              Ecosystem Collaborations
-            </p>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] uppercase tracking-wide">
-              Contributions
-            </h2>
-          </div>
-          <p className="text-micro text-[var(--text-secondary)] tracking-widest uppercase">
-            Click any tile for details
-          </p>
-        </div>
-
-        {/* Infinite horizontal ticker with black edge vignette masks */}
-        <div className="relative overflow-hidden w-full">
-          {/* Left / Right edge masks fading from black */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[var(--bg-primary)] to-transparent z-10" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[var(--bg-primary)] to-transparent z-10" />
-
-          <div ref={trackRef} className="flex items-center w-max will-change-transform" style={{ backfaceVisibility: "hidden" }}>
-            {tickerItems.map((project, index) => (
-              <div
-                key={`${project.id}-${index}`}
-                onClick={() => setSelectedProject(project)}
-                className="group flex-shrink-0 w-[280px] md:w-[320px] p-5 md:p-6 mx-3 rounded-xl border border-white/10 bg-[#0e1016]/85 backdrop-blur-md hover:border-[var(--crimson)] hover:shadow-[0_8px_30px_rgba(169,24,35,0.35)] transition-all duration-300 cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.6)]"
-              >
-                {/* Top: Number + arrow */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[0.68rem] text-[var(--crimson)] font-mono font-semibold">
-                    0{(index % CONTRIBUTIONS.length) + 1}
-                  </span>
-                  <svg
-                    width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                    className="text-[var(--text-secondary)] group-hover:text-[var(--crimson)] transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+        <div className="border-t border-[var(--border-medium)]">
+          {CONTRIBUTIONS.map((project, index) => {
+            const isOpen = openId === project.id;
+            return (
+              <div key={project.id} className="border-b border-[var(--border-medium)]">
+                <button
+                  type="button"
+                  onClick={() => setOpenId(project.id)}
+                  aria-expanded={isOpen}
+                  className="group w-full flex items-center gap-3 sm:gap-6 py-3.5 sm:py-5 text-left cursor-pointer"
+                >
+                  <span className="text-micro text-[var(--gold)] w-6 flex-shrink-0">0{index + 1}</span>
+                  <span
+                    className={`font-[family-name:var(--font-display)] text-[1.7rem] sm:text-4xl md:text-5xl leading-none transition-colors duration-300 ${
+                      isOpen ? "text-[var(--gold-bright)]" : "text-[var(--ivory)] group-hover:text-[var(--gold-bright)]"
+                    }`}
                   >
-                    <path d="M7 17L17 7M17 7H7M17 7V17" />
-                  </svg>
-                </div>
+                    {project.name}
+                  </span>
+                  <span className="hidden sm:block ml-auto text-micro text-[var(--text-secondary)] text-right">
+                    {project.category}
+                  </span>
+                  <span
+                    className={`ml-auto sm:ml-4 text-xl leading-none text-[var(--gold)] transition-transform duration-500 ${isOpen ? "rotate-45" : ""}`}
+                    aria-hidden="true"
+                  >
+                    +
+                  </span>
+                </button>
 
-                {/* Logo + Name */}
-                <div className="flex items-center gap-3">
-                  <div className="relative h-7 w-20 flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
-                    <Image
-                      src={project.logoSrc}
-                      alt={project.name}
-                      fill
-                      sizes="80px"
-                      className="object-contain object-left"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-sm font-semibold text-[var(--ivory)] group-hover:text-[var(--crimson)] transition-colors truncate">
-                      {project.name}
-                    </h3>
-                    <p className="text-[0.62rem] text-[var(--text-secondary)] truncate">
-                      {project.category}
-                    </p>
+                <div
+                  className="grid transition-[grid-template-rows] duration-500"
+                  style={{
+                    gridTemplateRows: isOpen ? "1fr" : "0fr",
+                    transitionTimingFunction: "var(--ease-out-expo)",
+                  }}
+                >
+                  <div className="overflow-hidden" inert={!isOpen}>
+                    <div className="pb-4 sm:pb-6 pl-9 sm:pl-12 flex flex-col md:flex-row md:items-center gap-3 md:gap-10">
+                      <div className="relative h-8 w-24 flex-shrink-0 hidden sm:block">
+                        <Image src={project.logoSrc} alt="" fill sizes="96px" className="object-contain object-left" />
+                      </div>
+                      <div className="max-w-2xl">
+                        <p className="text-sm font-semibold text-[var(--ivory)] mb-1">{project.roleHint}</p>
+                        <p className="text-sm leading-relaxed text-[var(--ivory-dim)]">{project.descriptionHint}</p>
+                      </div>
+                      <a
+                        href={project.officialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="md:ml-auto flex-shrink-0 text-micro text-[var(--gold)] hover:text-[var(--gold-bright)] transition-colors"
+                      >
+                        <span className="link-underline">Official Project</span> ↗
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
-
-      {/* Modal */}
-      {selectedProject && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/85 backdrop-blur-md"
-          onClick={() => setSelectedProject(null)}
-        >
-          <div
-            className="relative w-full max-w-lg p-6 md:p-8 rounded-2xl border border-white/15 bg-[#0f1118] shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-[var(--ivory)]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setSelectedProject(null)}
-              className="absolute top-5 right-5 p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-              aria-label="Close modal"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-
-            <div className="flex items-center gap-4 mb-5">
-              <div className="relative w-24 h-8 flex-shrink-0">
-                <Image src={selectedProject.logoSrc} alt={selectedProject.name} fill sizes="96px" className="object-contain object-left" />
-              </div>
-              <div>
-                <span className="text-micro text-[var(--text-secondary)] uppercase tracking-wider block">Overview</span>
-                <h3 className="text-lg font-bold font-[family-name:var(--font-display)] text-[var(--ivory)]">{selectedProject.name}</h3>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-lg bg-[var(--crimson)]/10 border border-[var(--crimson)]/30 mb-4">
-              <span className="text-[0.65rem] text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Area of Contribution</span>
-              <p className="text-sm font-semibold text-[var(--crimson)]">{selectedProject.roleHint}</p>
-            </div>
-
-            <p className="text-sm text-[var(--ivory-dim)] font-light mb-6 leading-relaxed">{selectedProject.descriptionHint}</p>
-
-            <div className="flex items-center justify-between pt-3 border-t border-white/15">
-              <a
-                href={selectedProject.officialUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--crimson)] transition-colors"
-              >
-                <span>Official Project</span>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-              </a>
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="px-4 py-1.5 rounded-lg border border-white/20 text-sm text-[var(--ivory)] hover:bg-[var(--crimson)] hover:border-[var(--crimson)] transition-colors cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

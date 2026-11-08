@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { scrollToSection, scrollToY } from "@/lib/scroll";
 
 const NAV_ITEMS = [
   { label: "Work", href: "#work" },
@@ -15,6 +16,7 @@ export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,6 +38,11 @@ export function Navigation() {
 
       setIsScrolled(currentScrollY > 80);
       lastScrollY.current = currentScrollY;
+
+      if (progressRef.current) {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progressRef.current.style.transform = `scaleX(${max > 0 ? currentScrollY / max : 0})`;
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -44,17 +51,22 @@ export function Navigation() {
 
   const scrollTo = useCallback((href: string) => {
     setIsOpen(false);
-    const el = document.querySelector(href);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
+    scrollToSection(href);
   }, []);
 
   return (
     <>
-      {/* Minimal floating nav */}
+      {/* Reading progress along the top edge: stays when the bar hides */}
+      <div className="fixed top-0 inset-x-0 h-px z-[60] pointer-events-none" aria-hidden="true">
+        <div
+          ref={progressRef}
+          className="h-full bg-[var(--gold)] origin-left"
+          style={{ transform: "scaleX(0)" }}
+        />
+      </div>
+
       <motion.header
-        className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none"
+        className="fixed top-0 inset-x-0 z-50"
         initial={{ opacity: 0, y: -20 }}
         animate={{
           opacity: isVisible || isOpen ? 1 : 0,
@@ -63,60 +75,45 @@ export function Navigation() {
         transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
       >
         <nav
-          className={`pointer-events-auto flex items-center justify-between gap-4 md:gap-8 px-4 md:px-6 py-2.5 rounded-full border transition-all duration-500 ${
-            isScrolled
-              ? "bg-[#0d0f14]/90 backdrop-blur-xl border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
-              : "bg-[#0d0f14]/75 backdrop-blur-md border-white/10"
+          className={`flex items-center justify-between gap-4 px-[var(--content-padding)] py-4 transition-colors duration-500 ${
+            isScrolled ? "bg-[var(--bg-primary)]/80 backdrop-blur-lg" : "bg-transparent"
           }`}
-          style={{ maxWidth: "720px", width: "100%" }}
         >
-          {/* Logo with signature crimson dot */}
           <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="text-xs font-bold text-[var(--ivory)] tracking-[0.15em] transition-colors cursor-pointer flex items-center gap-0.5"
+            onClick={() => scrollToY(0)}
+            className="font-[family-name:var(--font-display)] text-lg sm:text-xl tracking-[0.06em] text-[var(--ivory)] hover:text-[var(--gold-bright)] transition-colors cursor-pointer"
           >
-            <span>AYUSH</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--crimson)] inline-block ml-0.5" />
+            Ayush Gautam
           </button>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-6">
-            {NAV_ITEMS.map((item) => (
+          <div className="hidden md:flex items-center gap-8">
+            {NAV_ITEMS.map((item, i) => (
               <button
                 key={item.label}
                 onClick={() => scrollTo(item.href)}
-                className="text-[0.72rem] text-[var(--text-secondary)] hover:text-[var(--ivory)] tracking-[0.1em] uppercase transition-colors cursor-pointer font-medium"
+                className="text-micro text-[var(--text-secondary)] hover:text-[var(--ivory)] transition-colors cursor-pointer"
               >
-                {item.label}
+                <span className="text-[var(--gold)] mr-1.5">0{i + 1}</span>
+                <span className="link-underline">{item.label}</span>
               </button>
             ))}
           </div>
 
-          {/* CTA: Strong Crimson Anchor */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => scrollTo("#contact")}
-              className="px-4 py-1.5 rounded-full bg-[var(--crimson)] text-[var(--ivory)] hover:bg-[var(--crimson-bright)] text-[0.72rem] font-semibold tracking-wider transition-all duration-200 cursor-pointer shadow-[0_2px_12px_rgba(169,24,35,0.35)]"
-            >
+            <button onClick={() => scrollTo("#contact")} className="btn-ghost px-3 py-1.5 sm:px-4 sm:py-2">
               Let&apos;s talk
             </button>
 
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden relative w-7 h-7 flex flex-col items-center justify-center gap-1 text-[var(--ivory)] cursor-pointer"
+              className="md:hidden relative w-9 h-9 flex flex-col items-center justify-center gap-1.5 text-[var(--ivory)] cursor-pointer"
               aria-label={isOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isOpen}
             >
-              <span
-                className={`block w-4 h-[1px] bg-current transition-transform duration-300 ${
-                  isOpen ? "rotate-45 translate-y-[3px]" : ""
-                }`}
-              />
-              <span
-                className={`block w-4 h-[1px] bg-current transition-transform duration-300 ${
-                  isOpen ? "-rotate-45 -translate-y-[2px]" : ""
-                }`}
-              />
+              <span className={`block w-6 h-px bg-current transition-transform duration-300 ${isOpen ? "rotate-45 translate-y-[3.5px]" : ""}`} />
+              <span className={`block w-6 h-px bg-current transition-transform duration-300 ${isOpen ? "-rotate-45 -translate-y-[3.5px]" : ""}`} />
             </button>
           </div>
         </nav>
@@ -126,32 +123,28 @@ export function Navigation() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 z-40 bg-[var(--bg-primary)]/98 backdrop-blur-2xl flex flex-col items-center justify-center p-6"
+            className="fixed inset-0 z-40 bg-[var(--bg-primary)] flex flex-col justify-center px-[var(--content-padding)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <div className="flex flex-col items-center gap-6">
-              {NAV_ITEMS.map((item) => (
-                <button
+            <div className="flex flex-col items-start gap-5">
+              {NAV_ITEMS.map((item, i) => (
+                <motion.button
                   key={item.label}
                   onClick={() => scrollTo(item.href)}
-                  className="text-lg font-light tracking-wide text-[var(--ivory)] hover:text-[var(--crimson)] transition-colors cursor-pointer"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.05 + i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex items-baseline gap-4 font-[family-name:var(--font-display)] text-5xl uppercase text-[var(--ivory)] hover:text-[var(--gold)] transition-colors cursor-pointer"
                 >
+                  <span className="text-micro text-[var(--gold)]">0{i + 1}</span>
                   {item.label}
-                </button>
+                </motion.button>
               ))}
-
-              <div className="w-12 h-px bg-[var(--border-subtle)] my-2" />
-
-              <button
-                onClick={() => scrollTo("#contact")}
-                className="px-6 py-2.5 rounded-full bg-[var(--crimson)] text-[var(--ivory)] font-medium text-sm tracking-wider cursor-pointer shadow-[0_4px_16px_rgba(169,24,35,0.4)]"
-              >
-                Let&apos;s talk
-              </button>
             </div>
+            <div className="meander w-full mt-10" aria-hidden="true" />
           </motion.div>
         )}
       </AnimatePresence>

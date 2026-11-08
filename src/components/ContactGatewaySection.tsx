@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { DOORS, easeInOutCubic, lerp, range, stickyProgress } from "@/lib/motion";
+import { SocialLinks } from "./SocialLinks";
 
 const REASON_OPTIONS = [
   "Freelance project",
@@ -50,10 +52,36 @@ const COUNTRY_CODES = [
   { code: "+977", country: "NP" },
 ];
 
+const DOOR_BACKGROUND = "linear-gradient(180deg, #151d3a 0%, #0c1224 55%, #080b16 100%)";
+
+const Chevron = () => (
+  <svg
+    className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)]"
+    width="10"
+    height="10"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    aria-hidden="true"
+  >
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+);
+
+/**
+ * ContactGatewaySection
+ *
+ * "Open the door", literally: the sword (SingleSwordSystem) comes down the
+ * seam between two doors, and they part to reveal the form behind them.
+ */
 export function ContactGatewaySection() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const contactWrapperRef = useRef<HTMLDivElement>(null);
-  const zoomFlareRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+  const doorLeftRef = useRef<HTMLDivElement>(null);
+  const doorRightRef = useRef<HTMLDivElement>(null);
+  const seamRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -65,68 +93,67 @@ export function ContactGatewaySection() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sendError, setSendError] = useState("");
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    setSendError("");
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, website: honeypotRef.current?.value ?? "" }),
+      });
+      if (!response.ok) throw new Error(String(response.status));
       setSubmitted(true);
-    }, 800);
+      setFormData((data) => ({ ...data, phone: "", message: "" }));
+    } catch {
+      setSendError("Your message couldn't be sent right now. Please email me directly at hello@ayush.dev.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     const container = containerRef.current;
-    const contactWrapper = contactWrapperRef.current;
-    const zoomFlare = zoomFlareRef.current;
-    if (!container || !contactWrapper || !zoomFlare) return;
+    const form = formRef.current;
+    const doorLeft = doorLeftRef.current;
+    const doorRight = doorRightRef.current;
+    const seam = seamRef.current;
+    const ring = ringRef.current;
+    if (!container || !form || !doorLeft || !doorRight || !seam || !ring) return;
 
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
-
-    function update() {
-      if (!container || !contactWrapper || !zoomFlare) return;
+    const update = () => {
       const viewH = window.innerHeight;
       const rect = container.getBoundingClientRect();
-
       if (rect.bottom < -50 || rect.top > viewH + 50) return;
 
-      const scrollDistance = Math.max(1, rect.height - viewH);
-      const progress = rect.top <= 0 ? clamp(-rect.top / scrollDistance, 0, 1) : 0;
+      const p = rect.top <= 0 ? stickyProgress(rect, viewH) : 0;
 
-      // Flare scale and bloom
-      if (progress <= 0) {
-        zoomFlare.style.opacity = "0.08";
-        zoomFlare.style.transform = "scale(0.5)";
-      } else if (progress <= 0.45) {
-        const ft = progress / 0.45;
-        zoomFlare.style.opacity = String(lerp(0.08, 0.65, ft));
-        zoomFlare.style.transform = `scale(${lerp(0.5, 2.2, ft)})`;
-      } else {
-        const ft = (progress - 0.45) / 0.55;
-        zoomFlare.style.opacity = String(lerp(0.65, 0.05, ft));
-        zoomFlare.style.transform = `scale(${lerp(2.2, 4.5, ft)})`;
-      }
+      // The doors jolt on impact before they give way
+      const hit = range(p, DOORS.impact, DOORS.impact + 0.05);
+      const jolt = hit > 0 && hit < 1 ? Math.sin(hit * Math.PI * 4) * (1 - hit) * 7 : 0;
+      const open = easeInOutCubic(range(p, DOORS.openStart, DOORS.openEnd));
+      doorLeft.style.transform = `translate3d(${-open * 102}%, ${jolt}px, 0)`;
+      doorRight.style.transform = `translate3d(${open * 102}%, ${jolt}px, 0)`;
+      const closedOut = open >= 0.999;
+      doorLeft.style.visibility = closedOut ? "hidden" : "visible";
+      doorRight.style.visibility = closedOut ? "hidden" : "visible";
 
-      // Smooth reveal of contact form: reaches 100% full visibility early so user sees it clearly
-      if (progress < 0.28) {
-        contactWrapper.style.opacity = "0";
-        contactWrapper.style.visibility = "hidden";
-        contactWrapper.style.pointerEvents = "none";
-        contactWrapper.style.transform = "translateY(20px)";
-      } else if (progress <= 0.65) {
-        const t = (progress - 0.28) / 0.37;
-        contactWrapper.style.visibility = "visible";
-        contactWrapper.style.opacity = String(t);
-        contactWrapper.style.transform = `translateY(${lerp(20, 0, t)}px)`;
-        contactWrapper.style.pointerEvents = t >= 0.7 ? "auto" : "none";
-      } else {
-        contactWrapper.style.visibility = "visible";
-        contactWrapper.style.opacity = "1";
-        contactWrapper.style.transform = "translateY(0)";
-        contactWrapper.style.pointerEvents = "auto";
-      }
-    }
+      seam.style.opacity = String(range(p, DOORS.impact - 0.03, DOORS.impact) * (1 - range(p, DOORS.openStart, DOORS.openStart + 0.12)));
+
+      const ringT = range(p, DOORS.impact, DOORS.impact + 0.14);
+      ring.style.opacity = ringT > 0 && ringT < 1 ? String(1 - ringT) : "0";
+      ring.style.transform = `translate(-50%, -50%) scale(${lerp(0.1, 1.6, ringT)})`;
+
+      const reveal = range(p, DOORS.formStart, DOORS.formEnd);
+      form.style.opacity = String(reveal);
+      form.style.transform = `translate3d(0, ${lerp(28, 0, reveal)}px, 0) scale(${lerp(0.97, 1, reveal)})`;
+      form.style.pointerEvents = reveal >= 0.7 ? "auto" : "none";
+      form.style.visibility = reveal > 0 ? "visible" : "hidden";
+    };
 
     gsap.ticker.add(update);
     update();
@@ -140,89 +167,62 @@ export function ContactGatewaySection() {
     <section
       id="contact"
       ref={containerRef}
-      className="relative w-full bg-[var(--bg-primary)] overflow-visible"
-      style={{ minHeight: "175vh" }}
+      data-scroll-progress={DOORS.rest}
+      className="relative z-[2] w-full bg-[var(--bg-primary)]"
+      style={{ height: "340svh" }}
       aria-label="Contact"
     >
-      <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
+      <div
+        className="sticky top-0 h-[100svh] w-full overflow-hidden"
+        style={{
+          background: "radial-gradient(ellipse 70% 60% at 50% 40%, #131c3a 0%, var(--bg-primary) 75%)",
+        }}
+      >
+        {/* The room behind the doors */}
         <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 50%, rgba(15,17,22,0.95) 0%, rgba(9,10,13,1) 85%)",
-          }}
-          aria-hidden="true"
-        />
-
-        {/* Cinematic Crimson & Ivory Portal Flare */}
-        <div
-          className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center overflow-hidden"
-          aria-hidden="true"
+          ref={formRef}
+          className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto p-5 sm:p-8 will-change-transform"
+          style={{ opacity: 0, visibility: "hidden" }}
+          data-lenis-prevent
         >
-          <div
-            ref={zoomFlareRef}
-            className="absolute rounded-full will-change-transform"
-            style={{
-              width: "clamp(250px, 38vw, 550px)",
-              height: "clamp(250px, 38vw, 550px)",
-              background:
-                "radial-gradient(circle, rgba(169,24,35,0.32) 0%, rgba(169,24,35,0.08) 45%, transparent 75%)",
-              filter: "blur(35px)",
-              opacity: 0.08,
-              transform: "scale(0.5)",
-            }}
-          />
-          <div
-            className="absolute w-[1px] h-[150vh] pointer-events-none opacity-30"
-            style={{
-              background:
-                "linear-gradient(180deg, transparent, rgba(169,24,35,0.5) 50%, transparent)",
-            }}
-          />
-        </div>
-
-        {/* Contact form in deep near-black/charcoal container - perfectly sized to be 100% visible on all viewports */}
-        <div
-          ref={contactWrapperRef}
-          className="absolute inset-0 z-30 flex items-center justify-center p-3 sm:p-5 md:p-6 will-change-transform"
-          style={{
-            background:
-              "radial-gradient(circle at 50% 30%, rgba(18,20,27,0.99) 0%, rgba(9,10,13,1) 100%)",
-            opacity: 0,
-            visibility: "hidden",
-            pointerEvents: "none",
-            transform: "translateY(20px)",
-          }}
-        >
-          <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 py-2 sm:py-4 text-[var(--ivory)]">
+          <div className="w-full max-w-3xl my-auto text-[var(--ivory)]">
             {submitted ? (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-12 h-12 rounded-full border border-[var(--crimson)] mx-auto flex items-center justify-center bg-[var(--crimson)]/10">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--crimson)]"><polyline points="20 6 9 17 4 12" /></svg>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)]">Details received</h3>
-                <p className="text-xs sm:text-sm text-[var(--text-secondary)] max-w-sm mx-auto">Thank you for reaching out. I usually reply within 24 hours.</p>
-                <button type="button" onClick={() => setSubmitted(false)} className="mt-3 px-5 py-2 rounded-full border border-white/20 text-xs sm:text-sm text-[var(--ivory)] hover:bg-[var(--crimson)] hover:border-[var(--crimson)] transition-colors cursor-pointer">Send another</button>
+              <div className="text-center space-y-4">
+                <h3 className="text-section">Details received</h3>
+                <p className="text-sm text-[var(--text-secondary)] max-w-sm mx-auto">
+                  Thank you for reaching out. I usually reply within 24 hours.
+                </p>
+                <button type="button" onClick={() => setSubmitted(false)} className="btn-ghost px-5 py-2.5 mt-3">
+                  Send another
+                </button>
               </div>
             ) : (
               <>
-                {/* Header: Compact editorial bar with title & direct email */}
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-1 sm:gap-4 mb-3 sm:mb-4 pb-2 border-b border-white/10">
-                  <div>
-                    <p className="text-[0.62rem] text-[var(--crimson)] tracking-[0.25em] font-semibold uppercase mb-0.5">(Leave your details)</p>
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] leading-none tracking-wide uppercase">
-                      Open the door
-                    </h2>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <span className="text-[var(--text-secondary)]">Or write:</span>
-                    <a href="mailto:hello@ayush.dev" className="text-[var(--ivory)] border-b border-[var(--crimson)] pb-0.5 hover:text-[var(--crimson)] transition-colors font-medium">hello@ayush.dev</a>
-                  </div>
+                <div className="mb-4 sm:mb-8">
+                  <p className="text-micro text-[var(--gold)] mb-2">Leave your details</p>
+                  <h2 className="font-[family-name:var(--font-display)] uppercase text-[2.3rem] sm:text-6xl leading-none mb-3">
+                    The door is open
+                  </h2>
+                  <p className="text-sm text-[var(--text-secondary)]">
+                    Or write:{" "}
+                    <a href="mailto:hello@ayush.dev" className="text-[var(--ivory)] border-b border-[var(--gold)] pb-0.5 hover:text-[var(--gold-bright)] transition-colors">
+                      hello@ayush.dev
+                    </a>
+                  </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-3.5">
-                  {/* Row 1: Name and Email */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-5">
+                <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5">
+                  {/* Spam trap: hidden from people, filled in by bots */}
+                  <input
+                    ref={honeypotRef}
+                    type="text"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="absolute -left-[9999px] w-px h-px opacity-0"
+                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                     <div className="contact-field">
                       <label htmlFor="c-name">Name</label>
                       <input id="c-name" type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Your full name" />
@@ -234,36 +234,23 @@ export function ContactGatewaySection() {
                     </div>
                   </div>
 
-                  {/* Row 2: Phone with country code selector + Reason */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                     <div className="contact-field">
                       <label htmlFor="c-phone">Phone</label>
-                      <div className="flex items-center border-b border-white/15 focus-within:border-[var(--crimson)] transition-colors">
-                        <div className="relative flex items-center pr-1.5 border-r border-white/15 mr-2">
+                      <div className="flex items-stretch gap-3">
+                        <div className="relative flex-shrink-0 w-[5.6rem]">
                           <select
                             value={formData.countryCode}
                             onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                            className="bg-transparent text-[var(--ivory)] text-xs sm:text-sm pr-4 py-1.5 outline-none cursor-pointer border-none appearance-none font-mono"
-                            style={{ width: "auto", minWidth: "65px" }}
                             aria-label="Country Calling Code"
                           >
                             {COUNTRY_CODES.map((cc) => (
-                              <option key={`${cc.country}-${cc.code}`} value={cc.code} className="bg-[#12141c] text-[var(--ivory)]">
+                              <option key={`${cc.country}-${cc.code}`} value={cc.code}>
                                 {cc.country} {cc.code}
                               </option>
                             ))}
                           </select>
-                          <svg
-                            className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)]"
-                            width="10"
-                            height="10"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                          >
-                            <polyline points="6 9 12 15 18 9" />
-                          </svg>
+                          <Chevron />
                         </div>
                         <input
                           id="c-phone"
@@ -271,93 +258,119 @@ export function ContactGatewaySection() {
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           placeholder="Phone number"
-                          className="flex-1 bg-transparent text-[var(--ivory)] text-xs sm:text-sm py-1.5 outline-none border-none placeholder-[var(--text-muted)]"
-                          style={{ borderBottom: "none" }}
+                          className="min-w-0"
                         />
                       </div>
                     </div>
 
-                    <div className="contact-field relative">
+                    <div className="contact-field">
                       <label htmlFor="c-reason">Reason</label>
                       <div className="relative">
-                        <select id="c-reason" value={formData.reason} onChange={(e) => setFormData({ ...formData, reason: e.target.value })} className="py-1.5 text-xs sm:text-sm">
-                          {REASON_OPTIONS.map((opt) => (<option key={opt} value={opt} className="bg-[#12141c] text-[var(--ivory)]">{opt}</option>))}
+                        <select id="c-reason" value={formData.reason} onChange={(e) => setFormData({ ...formData, reason: e.target.value })}>
+                          {REASON_OPTIONS.map((opt) => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
                         </select>
-                        <svg className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)]" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+                        <Chevron />
                       </div>
                     </div>
                   </div>
 
-                  {/* Row 3: Message */}
                   <div className="contact-field">
                     <label htmlFor="c-msg">Message</label>
-                    <textarea id="c-msg" rows={1} value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="A few words about your project" className="resize-none py-1.5 text-xs sm:text-sm" />
+                    <textarea id="c-msg" rows={2} value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="A few words about your project" className="resize-none" />
                   </div>
 
-                  {/* Row 4: Submit + Social icons */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 gap-3">
-                    <div className="flex items-center gap-3">
-                      <button type="submit" disabled={loading} className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-[var(--crimson)] text-[var(--ivory)] hover:bg-[var(--crimson-bright)] text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-[0_4px_16px_rgba(169,24,35,0.4)] disabled:opacity-50 cursor-pointer">
-                        <span>{loading ? "Sending..." : "Send Details"}</span>
-                        {!loading && (<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>)}
-                      </button>
-                      <span className="text-[0.62rem] text-[var(--text-secondary)]">Same day reply</span>
-                    </div>
-
-                    {/* Social icons */}
-                    <div className="flex items-center gap-2">
-                      {/* Twitter/X */}
-                      <a
-                        href="https://x.com/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/10 bg-[#13151d] shadow-sm flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:border-[var(--crimson)] hover:bg-[var(--crimson)]/20 transition-all cursor-pointer"
-                        aria-label="Twitter / X"
-                        title="Twitter / X"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-                      </a>
-                      {/* Instagram */}
-                      <a
-                        href="https://instagram.com/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/10 bg-[#13151d] shadow-sm flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:border-[var(--crimson)] hover:bg-[var(--crimson)]/20 transition-all cursor-pointer"
-                        aria-label="Instagram"
-                        title="Instagram"
-                      >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" /></svg>
-                      </a>
-                      {/* GitHub */}
-                      <a
-                        href="https://github.com/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/10 bg-[#13151d] shadow-sm flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:border-[var(--crimson)] hover:bg-[var(--crimson)]/20 transition-all cursor-pointer"
-                        aria-label="GitHub"
-                        title="GitHub"
-                      >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg>
-                      </a>
-                      {/* LinkedIn */}
-                      <a
-                        href="https://linkedin.com/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-white/10 bg-[#13151d] shadow-sm flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:border-[var(--crimson)] hover:bg-[var(--crimson)]/20 transition-all cursor-pointer"
-                        aria-label="LinkedIn"
-                        title="LinkedIn"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
-                      </a>
-                    </div>
+                  <div className="flex items-center justify-between flex-wrap gap-3 pt-1">
+                    <button type="submit" disabled={loading} className="btn-gold px-6 py-3">
+                      {loading ? "Sending..." : "Send Details"}
+                      {!loading && <span aria-hidden="true">→</span>}
+                    </button>
+                    <SocialLinks />
                   </div>
+                  {sendError && (
+                    <p role="alert" className="text-sm text-[var(--gold-bright)]">
+                      {sendError}
+                    </p>
+                  )}
                 </form>
               </>
             )}
           </div>
         </div>
+
+        {/* The doors */}
+        <div
+          ref={doorLeftRef}
+          className="absolute inset-y-0 left-0 w-1/2 z-20 will-change-transform flex"
+          style={{ background: DOOR_BACKGROUND }}
+          aria-hidden="true"
+        >
+          <div className="flex-1 flex flex-col gap-3 sm:gap-5 p-3 sm:p-6 pr-4 sm:pr-8">
+            <div className="flex-[3] border border-[var(--gold-border)] opacity-80" />
+            <div className="flex-[2] border border-[var(--gold-border)] opacity-80" />
+          </div>
+          <div className="meander-v h-full" />
+        </div>
+        <div
+          ref={doorRightRef}
+          className="absolute inset-y-0 right-0 w-1/2 z-20 will-change-transform flex"
+          style={{ background: DOOR_BACKGROUND }}
+          aria-hidden="true"
+        >
+          <div className="meander-v h-full" style={{ transform: "scaleX(-1)" }} />
+          <div className="flex-1 flex flex-col gap-3 sm:gap-5 p-3 sm:p-6 pl-4 sm:pl-8">
+            <div className="flex-[3] border border-[var(--gold-border)] opacity-80" />
+            <div className="flex-[2] border border-[var(--gold-border)] opacity-80" />
+          </div>
+        </div>
+
+        {/* Below the sword's tip, so the blade never crosses the words */}
+        <DoorTitle doorLeftRef={doorLeftRef} />
+
+        <div
+          ref={seamRef}
+          className="absolute inset-y-0 left-1/2 w-[3px] -translate-x-1/2 z-30 pointer-events-none"
+          style={{
+            opacity: 0,
+            background: "linear-gradient(180deg, #fff6dc, var(--gold-bright) 46%, transparent 62%)",
+            boxShadow: "0 0 26px 5px rgba(246,213,138,0.55)",
+          }}
+          aria-hidden="true"
+        />
+        <div
+          ref={ringRef}
+          className="absolute left-1/2 top-[46%] w-[70vmin] h-[70vmin] rounded-full border-2 border-[var(--gold-bright)] z-30 pointer-events-none"
+          style={{ opacity: 0 }}
+          aria-hidden="true"
+        />
       </div>
     </section>
+  );
+}
+
+function DoorTitle({ doorLeftRef }: { doorLeftRef: React.RefObject<HTMLDivElement | null> }) {
+  const titleRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    const update = () => {
+      const door = doorLeftRef.current;
+      const title = titleRef.current;
+      if (!door || !title) return;
+      const moved = door.getBoundingClientRect().left / door.offsetWidth;
+      title.style.opacity = String(1 - range(-moved, 0, 0.14));
+    };
+    gsap.ticker.add(update);
+    return () => gsap.ticker.remove(update);
+  }, [doorLeftRef]);
+
+  return (
+    <p
+      ref={titleRef}
+      className="absolute inset-x-0 top-[68%] z-30 text-center pointer-events-none font-[family-name:var(--font-display)] uppercase text-[13vw] sm:text-[9vw] leading-none text-[var(--ivory)]"
+      aria-hidden="true"
+    >
+      Open the door
+    </p>
   );
 }

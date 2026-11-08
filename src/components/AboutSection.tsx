@@ -7,13 +7,30 @@ import { TECH_ITEMS } from "./TechLogos";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const HEADING_WORDS = [
+  { text: "I", isAccent: false },
+  { text: "am", isAccent: false },
+  { text: "Ayush,", isAccent: false },
+  { text: "a", isAccent: false },
+  { text: "creative", isAccent: false },
+  { text: "engineer", isAccent: false },
+  { text: "who", isAccent: false },
+  { text: "turns", isAccent: false },
+  { text: "ambitious", isAccent: false },
+  { text: "ideas", isAccent: false },
+  { text: "into", isAccent: false },
+  { text: "resilient", isAccent: true },
+  { text: "digital", isAccent: true },
+  { text: "products.", isAccent: true },
+];
+
+// Repeated so each half of the track is wider than any screen
+const TICKER_ITEMS = [...TECH_ITEMS, ...TECH_ITEMS, ...TECH_ITEMS, ...TECH_ITEMS];
+
 export function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headingRef = useRef<HTMLDivElement>(null);
-  const bioRef = useRef<HTMLDivElement>(null);
-  const taglineRef = useRef<HTMLParagraphElement>(null);
-  const techTrackRef = useRef<HTMLDivElement>(null);
-  const posRef = useRef(0);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -22,48 +39,36 @@ export function AboutSection() {
     if (prefersReducedMotion) return;
 
     const ctx = gsap.context(() => {
-      // Heading words animation: staggered reveal
+      // The sentence lights up word by word as you read down it
       const words = headingRef.current?.querySelectorAll(".word");
       if (words) {
-        gsap.from(words, {
-          y: 80,
-          opacity: 0,
-          stagger: 0.04,
-          duration: 1.4,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: headingRef.current,
-            start: "top 82%",
-            toggleActions: "play none none reverse",
-          },
-        });
+        gsap.fromTo(
+          words,
+          { opacity: 0.14 },
+          {
+            opacity: 1,
+            stagger: 0.1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: headingRef.current,
+              start: "top 78%",
+              end: "bottom 45%",
+              scrub: true,
+            },
+          }
+        );
       }
 
-      // Tagline slide up
-      if (taglineRef.current) {
-        gsap.from(taglineRef.current, {
-          y: 30,
+      if (copyRef.current) {
+        gsap.from(copyRef.current.children, {
+          y: 28,
           opacity: 0,
-          duration: 1.2,
+          stagger: 0.12,
+          duration: 1.1,
           ease: "expo.out",
           scrollTrigger: {
-            trigger: taglineRef.current,
+            trigger: copyRef.current,
             start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-        });
-      }
-
-      // Bio text
-      if (bioRef.current) {
-        gsap.from(bioRef.current, {
-          y: 40,
-          opacity: 0,
-          duration: 1,
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: bioRef.current,
-            start: "top 82%",
             toggleActions: "play none none reverse",
           },
         });
@@ -73,176 +78,72 @@ export function AboutSection() {
     return () => ctx.revert();
   }, []);
 
-  // Continuous JS ticker: runs only when in viewport to ensure 60fps on mobile
-  useEffect(() => {
-    const track = techTrackRef.current;
-    if (!track) return;
-
-    let isPaused = false;
-    let isVisible = false;
-    let animId: number = 0;
-    const speed = 0.9;
-
-    const onEnter = () => { isPaused = true; };
-    const onLeave = () => { isPaused = false; };
-
-    track.addEventListener("mouseenter", onEnter);
-    track.addEventListener("mouseleave", onLeave);
-    track.addEventListener("touchstart", onEnter, { passive: true });
-    track.addEventListener("touchend", onLeave, { passive: true });
-
-    const step = () => {
-      if (!isPaused && isVisible) {
-        posRef.current += speed;
-        const halfWidth = track.scrollWidth / 2;
-        if (halfWidth > 0 && posRef.current >= halfWidth) {
-          posRef.current -= halfWidth;
-        }
-        track.style.transform = `translate3d(-${posRef.current}px, 0, 0)`;
-      }
-      if (isVisible) {
-        animId = requestAnimationFrame(step);
-      }
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting;
-        if (isVisible) {
-          cancelAnimationFrame(animId);
-          animId = requestAnimationFrame(step);
-        } else {
-          cancelAnimationFrame(animId);
-        }
-      },
-      { rootMargin: "150px" }
-    );
-    observer.observe(track);
-
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(animId);
-      track.removeEventListener("mouseenter", onEnter);
-      track.removeEventListener("mouseleave", onLeave);
-      track.removeEventListener("touchstart", onEnter);
-      track.removeEventListener("touchend", onLeave);
-    };
-  }, []);
-
-  const headingWords = [
-    { text: "I", isAccent: false },
-    { text: "am", isAccent: false },
-    { text: "Ayush,", isAccent: false },
-    { text: "a", isAccent: false },
-    { text: "creative", isAccent: false },
-    { text: "engineer", isAccent: false },
-    { text: "who", isAccent: false },
-    { text: "turns", isAccent: false },
-    { text: "ambitious", isAccent: false },
-    { text: "ideas", isAccent: false },
-    { text: "into", isAccent: false },
-    { text: "resilient", isAccent: true },
-    { text: "digital", isAccent: true },
-    { text: "products.", isAccent: true },
-  ];
-
-  // Quadruple items for seamless infinite horizontal rotation
-  const rotatingTechItems = [
-    ...TECH_ITEMS,
-    ...TECH_ITEMS,
-    ...TECH_ITEMS,
-    ...TECH_ITEMS,
-  ];
-
   return (
     <section
       id="about"
       ref={sectionRef}
-      className="relative z-10 py-10 sm:py-20 md:py-32 bg-[var(--bg-primary)] border-t border-[var(--border-subtle)] overflow-hidden"
+      className="relative z-[2] bg-[var(--bg-primary)] overflow-hidden pt-16 sm:pt-28 md:pt-36"
       aria-label="About and Background"
     >
-      <div className="max-w-6xl mx-auto px-[var(--content-padding)] mb-8 sm:mb-14 md:mb-20">
-        {/* Section Label */}
-        <p className="text-micro text-[var(--crimson)] tracking-[0.3em] uppercase mb-2 sm:mb-6 md:mb-8 font-semibold">
-          (About)
-        </p>
+      <div className="meander absolute top-0 inset-x-0" aria-hidden="true" />
 
-        {/* Large Editorial Heading */}
-        <div ref={headingRef} className="mb-4 sm:mb-8 md:mb-12">
-          <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-[family-name:var(--font-display)] text-[var(--ivory)] leading-[1.1] max-w-5xl tracking-wide">
-            {headingWords.map((item, i) => (
-              <span
-                key={i}
-                className={`word inline-block mr-[0.28em] ${
-                  item.isAccent ? "text-[var(--crimson)]" : "text-[var(--ivory)]"
-                }`}
-              >
-                {item.text}
-              </span>
-            ))}
-          </h2>
-        </div>
+      {/* Right column stays empty on desktop: the sword hangs there */}
+      <div className="px-[var(--content-padding)] lg:pr-[28vw] pb-12 sm:pb-20 md:pb-28">
+        <p className="text-micro text-[var(--gold)] mb-4 sm:mb-8">About</p>
 
-        {/* Narrative columns */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 md:gap-14 pt-3 sm:pt-4 border-t border-[var(--border-subtle)]">
-          <p
-            ref={taglineRef}
-            className="md:col-span-7 text-sm sm:text-base md:text-lg text-[var(--ivory-dim)] font-light leading-relaxed"
-          >
+        <h2
+          ref={headingRef}
+          className="font-[family-name:var(--font-display)] text-[2.15rem] sm:text-5xl md:text-6xl xl:text-7xl leading-[1.08] text-[var(--ivory)] mb-8 sm:mb-14"
+        >
+          {HEADING_WORDS.map((item, i) => (
+            <span
+              key={i}
+              className={`word inline-block mr-[0.26em] ${item.isAccent ? "text-[var(--gold)]" : ""}`}
+            >
+              {item.text}
+            </span>
+          ))}
+        </h2>
+
+        <div ref={copyRef} className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 pt-5 border-t border-[var(--border-medium)]">
+          <p className="md:col-span-7 text-base md:text-lg text-[var(--ivory-dim)] leading-relaxed">
             I specialize in bridging artistic visual direction and robust software engineering. Whether building high-performance web applications, interactive motion experiences, or developer toolkits, my focus is always on speed, beauty, and effortless user flow.
           </p>
-          <div
-            ref={bioRef}
-            className="md:col-span-5 text-xs sm:text-sm md:text-base text-[var(--text-secondary)] font-light leading-relaxed space-y-3 sm:space-y-4"
-          >
-            <p>
-              From architecture planning to the final micro-interaction, every detail is engineered with intention and craft. I take the work seriously, so the results do not have to explain themselves.
-            </p>
-          </div>
+          <p className="md:col-span-5 text-sm md:text-base text-[var(--text-secondary)] leading-relaxed">
+            From architecture planning to the final micro-interaction, every detail is engineered with intention and craft. I take the work seriously, so the results do not have to explain themselves.
+          </p>
         </div>
       </div>
 
-      {/* Modern Rotating Tech Strip (Black/Charcoal with Crimson Block Accents) */}
-      <div className="w-full relative mt-2 sm:mt-4 pt-4 pb-4 sm:pt-7 sm:pb-6 border-t border-b border-white/10 bg-[#0e1015]">
-        {/* Strip Header */}
-        <div className="max-w-6xl mx-auto px-[var(--content-padding)] mb-2.5 sm:mb-5 flex items-center justify-between">
-          <span className="text-micro tracking-[0.25em] uppercase text-[var(--crimson)] font-semibold">
-            My Skills
-          </span>
+      {/* Skills: the type is the design, two rows drifting against each other */}
+      <div className="border-t border-[var(--border-medium)] pt-4 sm:pt-6 pb-6 sm:pb-10">
+        <p className="text-micro text-[var(--gold)] px-[var(--content-padding)] mb-3 sm:mb-5">My Skills</p>
+
+        <div className="ticker-row overflow-hidden">
+          <div className="ticker-track">
+            {TICKER_ITEMS.map((tech, index) => (
+              <span
+                key={`${tech.name}-${index}`}
+                className="flex items-center gap-4 sm:gap-6 pr-6 sm:pr-10 font-[family-name:var(--font-display)] text-3xl sm:text-5xl lg:text-6xl text-[var(--ivory)] whitespace-nowrap"
+              >
+                {tech.name}
+                <span className="w-5 h-5 sm:w-7 sm:h-7 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full">
+                  {tech.svg("#e3b25c")}
+                </span>
+              </span>
+            ))}
+          </div>
         </div>
 
-        {/* Continuous Horizontal Ticker */}
-        <div className="relative overflow-hidden w-full py-2">
-          {/* Edge vignette fade masks */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#0e1015] to-transparent z-10" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#0e1015] to-transparent z-10" />
-
-          {/* JS RAF Driven Track (Brave-compatible) */}
-          <div
-            ref={techTrackRef}
-            className="flex items-center w-max will-change-transform"
-            style={{ backfaceVisibility: "hidden" }}
-          >
-            {rotatingTechItems.map((tech, index) => (
-              <div
+        <div className="ticker-row overflow-hidden mt-2 sm:mt-3" aria-hidden="true">
+          <div className="ticker-track reverse">
+            {TICKER_ITEMS.map((tech, index) => (
+              <span
                 key={`${tech.name}-${index}`}
-                className="group flex items-center gap-3.5 p-1.5 pr-5 mx-2.5 rounded-2xl bg-[#13151c] border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.5)] hover:border-[var(--crimson)] hover:shadow-[0_8px_25px_rgba(169,24,35,0.3)] hover:scale-[1.03] transition-all duration-300 flex-shrink-0 cursor-default select-none"
+                className="text-outline pr-8 sm:pr-14 font-[family-name:var(--font-display)] text-3xl sm:text-5xl lg:text-6xl whitespace-nowrap"
               >
-                {/* Crimson Rounded Square Icon Block */}
-                <div className="w-9 h-9 rounded-xl bg-[var(--crimson)] flex items-center justify-center flex-shrink-0 shadow-[0_2px_10px_rgba(169,24,35,0.4)] transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
-                  <div className="w-5 h-5 flex items-center justify-center text-[var(--ivory)]">
-                    {tech.svg("#f5f2ea")}
-                  </div>
-                </div>
-
-                {/* Modern Bold Typography */}
-                <span className="text-xs sm:text-sm font-bold tracking-wide text-[var(--ivory)] group-hover:text-[var(--crimson-bright)] transition-colors whitespace-nowrap">
-                  {tech.name}
-                </span>
-
-                {/* Subtle indicator dot */}
-                <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[var(--crimson)] transition-colors ml-1" />
-              </div>
+                {tech.name}
+              </span>
             ))}
           </div>
         </div>

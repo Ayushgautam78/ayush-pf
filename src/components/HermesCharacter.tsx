@@ -158,11 +158,7 @@ export function HermesCharacter() {
 
   return (
     <div
-      className="relative pointer-events-none select-none flex items-center justify-center"
-      style={{
-        width: "clamp(300px, 38vw, 560px)",
-        aspectRatio: "1/1",
-      }}
+      className="relative w-full h-full pointer-events-none select-none flex items-center justify-center"
       aria-label="Hermes character"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
