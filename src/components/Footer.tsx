@@ -2,13 +2,16 @@
 
 import { scrollToY } from "@/lib/scroll";
 import { SocialLinks } from "./SocialLinks";
+import { NameTablet } from "./NameTablet";
 
 export function Footer() {
   return (
-    <footer className="relative z-[2] overflow-hidden bg-[var(--bg-primary)] text-[var(--bone)] pt-10 sm:pt-16">
+    <footer className="relative z-[2] overflow-hidden bg-[var(--bg-primary)] text-[var(--bone)]">
       <div className="meander absolute top-0 inset-x-0" aria-hidden="true" />
 
-      <div className="px-[var(--content-padding)] flex flex-col md:flex-row md:items-end justify-between gap-8 mb-8 sm:mb-12">
+      <NameTablet />
+
+      <div className="px-[var(--content-padding)] pt-8 pb-10 sm:pb-12 border-t border-[var(--border-medium)] flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div>
           <p className="text-micro text-[var(--red)] mb-3">Somewhere between structure and instinct.</p>
           <p className="text-sm text-[var(--text-secondary)] max-w-md leading-relaxed mb-3">
@@ -23,7 +26,6 @@ export function Footer() {
           <SocialLinks />
           <div className="flex items-center gap-6 text-xs text-[var(--text-secondary)]">
             <p>© {new Date().getFullYear()} Ayush Gautam</p>
-            <p className="font-greek italic text-[var(--red)] tracking-[0.2em]">ΤΕΛΟΣ</p>
             <button
               onClick={() => scrollToY(0)}
               className="hover:text-[var(--red-bright)] transition-colors cursor-pointer group flex items-center gap-1"
@@ -34,15 +36,6 @@ export function Footer() {
           </div>
         </div>
       </div>
-
-      {/* Wordmark, cropped by the bottom of the page */}
-      <p
-        className="font-[family-name:var(--font-display)] font-extrabold uppercase text-center leading-[0.74] tracking-[-0.06em] text-[var(--bone)] select-none whitespace-nowrap -mb-[0.06em]"
-        style={{ fontSize: "21vw" }}
-        aria-hidden="true"
-      >
-        Ayush
-      </p>
     </footer>
   );
 }

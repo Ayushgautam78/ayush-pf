@@ -5,6 +5,7 @@ import gsap from "gsap";
 import {
   DOORS,
   INTRO,
+  gateClock,
   clamp,
   damp,
   easeInCubic,
@@ -32,6 +33,8 @@ interface Pose {
   glow: number;
   /** 0-1 amount of ambient float and pointer tilt */
   idle: number;
+  /** Follow the pose exactly; its source is already smoothed */
+  exact?: boolean;
 }
 
 interface Spark {
@@ -219,13 +222,15 @@ export function SingleSwordSystem() {
       const above = -vh * 0.5 - length / 2 - 60;
       const planted = -vh * 0.04 - length / 2;
       const drop = easeInCubic(range(p, 0.02, DOORS.impact));
-      const withdraw = easeInOutCubic(range(p, DOORS.withdrawStart, DOORS.withdrawEnd));
+      const withdraw = easeOutCubic(range(p, DOORS.withdrawStart, DOORS.withdrawEnd));
       return {
         x: 0,
         y: lerp(lerp(above, planted, drop), above, withdraw),
         rot: 90,
         scale: length / swordW,
-        opacity: p >= DOORS.withdrawEnd ? 0 : 1,
+        // Only hidden once it has risen fully out of frame
+        opacity: withdraw >= 1 ? 0 : 1,
+        exact: true,
         draw: 1,
         fall: 1,
         glow: 0.5 + 0.5 * range(p, DOORS.impact - 0.04, DOORS.impact),
@@ -242,7 +247,7 @@ export function SingleSwordSystem() {
       if (!intro || !about || !journey || !rail || !contact) return null;
 
       if (contact.top <= 0 && contact.bottom > vh * 0.5) {
-        return contactPose(stickyProgress(contact, vh), vh);
+        return contactPose(gateClock.progress, vh);
       }
 
       if (journey.top < vh && journey.bottom > 0) {
@@ -291,10 +296,10 @@ export function SingleSwordSystem() {
 
       const target = computePose(vw, vh);
       if (!target || target.opacity <= 0.001) {
-        curr.opacity = damp(curr.opacity, 0, 18, dt);
+        curr.opacity = damp(curr.opacity, 0, 30, dt);
       } else {
         // Coming from hidden: appear in place instead of flying across the screen
-        const k = curr.opacity < 0.01 || reducedMotion ? 1000 : 18;
+        const k = curr.opacity < 0.01 || reducedMotion || target.exact ? 1000 : 18;
         curr.x = damp(curr.x, target.x, k, dt);
         curr.y = damp(curr.y, target.y, k, dt);
         curr.rot = damp(curr.rot, target.rot, k, dt);
@@ -306,11 +311,9 @@ export function SingleSwordSystem() {
         curr.idle = damp(curr.idle, target.idle, 6, dt);
       }
 
-      const contactEl = el("contact");
-      if (contactEl) {
-        const rect = contactEl.getBoundingClientRect();
-        const p = rect.top <= 0 ? stickyProgress(rect, vh) : 0;
-        if (lastContactP < DOORS.impact && p >= DOORS.impact) {
+      {
+        const p = gateClock.progress;
+        if (lastContactP < DOORS.impact && p >= DOORS.impact && curr.opacity > 0.5) {
           const tip = worldAlong(swordW / 2);
           emit(tip.x, tip.y, 90, -Math.PI / 2, Math.PI * 1.1, 760);
         }

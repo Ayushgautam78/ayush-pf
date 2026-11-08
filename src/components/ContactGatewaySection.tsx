@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { DOORS, clamp, damp, easeInOutCubic, easeOutCubic, lerp, range, stickyProgress } from "@/lib/motion";
+import { DOORS, clamp, damp, easeInOutCubic, easeInOutSine, easeOutCubic, gateClock, lerp, range, stickyProgress } from "@/lib/motion";
 import { SocialLinks } from "./SocialLinks";
 import { Magnetic } from "./Tilt";
 import { GreekVista } from "./GreekVista";
@@ -174,7 +174,7 @@ function Column({ className = "" }: { className?: string }) {
 /**
  * ContactGatewaySection
  *
- * "Open the door", literally. A temple front closes the page: the sword
+ * The temple gate. A temple front closes the page: the sword
  * (SingleSwordSystem) strikes the seam and light cracks through. The heavy
  * doors swing inward on their hinges onto a sunset colonnade (GreekVista),
  * and the camera walks through the doorway into it, where the form waits.
@@ -246,7 +246,7 @@ export function ContactGatewaySection() {
     // Grit shaken loose from the lintel by the strike
     type Mote = { x: number; y: number; vx: number; vy: number; life: number; size: number };
     let motes: Mote[] = [];
-    let lastTarget = 0;
+    let lastP = 0;
     const shakeDust = () => {
       const w = dustCanvas.width;
       motes = Array.from({ length: 140 }, () => ({
@@ -288,19 +288,20 @@ export function ContactGatewaySection() {
 
       const target = rect.top <= 0 ? stickyProgress(rect, viewH) : 0;
       const dt = Math.min((deltaTime || 16) / 1000, 0.05);
-      if (lastTarget < DOORS.impact && target >= DOORS.impact && !reducedMotion) shakeDust();
-      lastTarget = target;
       drawDust(dt);
-      // A low stiffness gives the doors their weight
-      smooth = reducedMotion ? target : damp(smooth, target, 5.5, dt);
+      // Weighted but responsive; the sword reads this same value
+      smooth = reducedMotion ? target : damp(smooth, target, 8, dt);
       const p = smooth;
+      gateClock.progress = p;
+      if (lastP < DOORS.impact && p >= DOORS.impact && !reducedMotion) shakeDust();
+      lastP = p;
 
       // The strike knocks the doors ajar and they shudder
       const hit = range(p, DOORS.impact, DOORS.impact + 0.05);
       const jolt = hit > 0 && hit < 1 ? Math.sin(hit * Math.PI * 4) * (1 - hit) * 1.4 : 0;
       const ajar = easeOutCubic(range(p, DOORS.impact, DOORS.impact + 0.05)) * 3.5;
-      const open = easeInOutCubic(range(p, DOORS.openStart, DOORS.openEnd));
-      const angle = ajar + open * 100 + jolt;
+      const open = easeInOutSine(range(p, DOORS.openStart, DOORS.openEnd));
+      const angle = ajar + open * 96 + jolt;
       doorLeft.style.transform = `rotateY(${angle}deg)`;
       doorRight.style.transform = `rotateY(${-angle}deg)`;
       shades.forEach((shade) => {
@@ -323,8 +324,8 @@ export function ContactGatewaySection() {
       // The camera shakes with the strike, eases forward as the doors open,
       // then walks through
       const shake = hit > 0 && hit < 1 && !reducedMotion ? Math.sin(hit * Math.PI * 9) * (1 - hit) * 7 : 0;
-      temple.style.transform = `translate3d(0, ${shake}px, 0) scale(${lerp(1, 1.08, open) * lerp(1, 3.6, pass)})`;
-      temple.style.opacity = String(1 - range(pass, 0.6, 1));
+      // No fade: the doorway itself grows past the edges of the screen
+      temple.style.transform = `translate3d(0, ${shake}px, 0) scale(${lerp(1, 1.06, open) * lerp(1, 3.8, pass)})`;
       temple.style.visibility = pass >= 0.999 ? "hidden" : "visible";
       vista.style.transform = `scale(${lerp(1.4, 1, easeOutCubic(range(p, DOORS.openStart, DOORS.passEnd)))})`;
 
@@ -486,15 +487,14 @@ export function ContactGatewaySection() {
 
         {/* The temple front: it grows past the camera as you walk through */}
         <div ref={templeRef} className="absolute inset-0 z-20 will-change-transform" style={{ transformOrigin: "50% 62%" }} aria-hidden="true">
-          {/* Architrave with the Delphic maxim */}
+          {/* Architrave, carved with the Delphic maxim */}
           <div
-            className="absolute inset-x-0 top-0 h-[17svh] flex flex-col items-center justify-end pb-[1.6svh] border-b border-[var(--border-medium)]"
+            className="absolute inset-x-0 top-0 h-[17svh] flex flex-col items-center justify-end pb-[1.8svh] border-b border-[var(--border-medium)]"
             style={{ background: WALL }}
           >
-            <p className="font-greek text-[var(--bone)] text-[clamp(1.2rem,4.4vw,3.6rem)] tracking-[0.32em] leading-none pl-[0.32em]">
-              ΓΝΩΘΙ ΣΕΑΥΤΟΝ
+            <p className="font-[family-name:var(--font-display)] font-bold uppercase text-[var(--bone)] text-[clamp(1.1rem,3.6vw,3rem)] tracking-[0.42em] leading-none pl-[0.42em]">
+              Know Thyself
             </p>
-            <p className="text-micro text-[var(--text-secondary)] mt-2">Know thyself</p>
           </div>
           <div className="meander absolute inset-x-0 top-[17svh]" />
 
@@ -523,7 +523,6 @@ export function ContactGatewaySection() {
               className="absolute inset-0 pointer-events-none"
               style={{
                 opacity: 0,
-                mixBlendMode: "screen",
                 clipPath: "polygon(38% 0, 62% 0, 82% 100%, 18% 100%)",
                 background: "linear-gradient(180deg, rgba(255,226,206,0.75) 0%, rgba(214,42,31,0.25) 70%, transparent 100%)",
               }}
@@ -542,29 +541,22 @@ export function ContactGatewaySection() {
                 boxShadow: "0 0 30px 8px rgba(255,200,180,0.55), 0 0 90px 30px rgba(214,42,31,0.35)",
               }}
             />
-            <div ref={doorLeftRef} className="absolute inset-y-0 left-0 w-1/2 will-change-transform" style={{ transformOrigin: "0% 50%", transformStyle: "preserve-3d" }}>
-              <Door side="left" />
-              <p className="absolute right-[12%] bottom-[16%] font-[family-name:var(--font-display)] font-extrabold uppercase text-[var(--bone)] text-[clamp(1rem,4.2vw,5.4rem)] leading-none tracking-[-0.05em]" style={{ textShadow: "0 2px 12px #000" }}>
-                Open the
-              </p>
-            </div>
-            <div ref={doorRightRef} className="absolute inset-y-0 right-0 w-1/2 will-change-transform" style={{ transformOrigin: "100% 50%", transformStyle: "preserve-3d" }}>
-              <Door side="right" />
-              <p className="absolute left-[12%] bottom-[16%] font-greek italic text-[var(--red)] text-[clamp(1.2rem,5vw,6.4rem)] leading-none" style={{ textShadow: "0 2px 12px #000" }}>
-                door
-              </p>
-            </div>
             {/* Sunlight pouring past the doors */}
             <div
               ref={raysRef}
               className="absolute inset-0 pointer-events-none"
               style={{
                 opacity: 0,
-                mixBlendMode: "screen",
                 background:
                   "conic-gradient(from 180deg at 50% -10%, transparent 0deg, rgba(255,226,210,0.0) 150deg, rgba(255,226,210,0.35) 165deg, rgba(255,240,230,0.0) 172deg, rgba(255,226,210,0.3) 180deg, rgba(255,240,230,0) 188deg, rgba(255,226,210,0.35) 195deg, transparent 210deg)",
               }}
             />
+            <div ref={doorLeftRef} className="absolute inset-y-0 left-0 w-1/2 will-change-transform" style={{ transformOrigin: "0% 50%", transformStyle: "preserve-3d" }}>
+              <Door side="left" />
+            </div>
+            <div ref={doorRightRef} className="absolute inset-y-0 right-0 w-1/2 will-change-transform" style={{ transformOrigin: "100% 50%", transformStyle: "preserve-3d" }}>
+              <Door side="right" />
+            </div>
             {/* The depth of the opening: shadow inside the lintel and jambs */}
             <div
               className="absolute inset-0 pointer-events-none"

@@ -36,9 +36,10 @@ export const INTRO = {
 /** Beats of the contact gate, as progress through #contact. */
 export const DOORS = {
   impact: 0.18,
-  withdrawStart: 0.24,
-  withdrawEnd: 0.38,
-  openStart: 0.26,
+  /** The sword recoils straight after the strike, clear before the doors swing */
+  withdrawStart: 0.19,
+  withdrawEnd: 0.3,
+  openStart: 0.24,
   openEnd: 0.56,
   /** Walking through the doorway: the temple front grows past the camera */
   passStart: 0.52,
@@ -48,3 +49,12 @@ export const DOORS = {
   /** Where nav links land: doors fully open, form usable. */
   rest: 0.88,
 };
+
+/**
+ * The gate's smoothed progress, written by ContactGatewaySection every frame
+ * and read by SingleSwordSystem, so the sword and the doors share one clock
+ * and can never drift apart.
+ */
+export const gateClock = { progress: 0 };
+
+export const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
